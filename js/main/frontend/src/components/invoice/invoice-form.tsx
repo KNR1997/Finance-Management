@@ -6,8 +6,9 @@ import * as yup from "yup";
 import Button from "../ui/button/Button";
 import axios from "axios";
 import { useNavigate } from "react-router";
-import { Invoice, InvoiceStatus, User } from "../../types";
+import { ERole, Invoice, InvoiceStatus, User } from "../../types";
 import SelectInput from "../form/select-input";
+import { useAuth } from "../../context/AuthContext";
 
 type FormValues = {
   invoiceNumber: string;
@@ -41,8 +42,11 @@ interface Props {
 }
 
 export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+
+  console.log("user: ", user);
 
   const {
     control,
@@ -75,6 +79,14 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
         alert("Something went wrong!!!");
       }
     }
+  };
+
+  const enableFGStatusEdit = (): boolean => {
+    return user?.roles?.includes(ERole.ROLE_FINISH_GOOD);
+  };
+
+  const enableTerritoryStatusEdit = (): boolean => {
+    return user?.roles?.includes(ERole.ROLE_FINANCE);
   };
 
   return (
@@ -112,6 +124,7 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
             rules={{ required: "Role is required" }}
             render={({ field }) => (
               <SelectInput
+                disabled={!enableFGStatusEdit()}
                 options={invoiceStatus}
                 placeholder="Select Option"
                 value={field.value}
@@ -136,6 +149,7 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
             rules={{ required: "Role is required" }}
             render={({ field }) => (
               <SelectInput
+                disabled={!enableTerritoryStatusEdit()}
                 options={invoiceStatus}
                 placeholder="Select Option"
                 value={field.value}

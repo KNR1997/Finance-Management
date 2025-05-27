@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import CreateOrUpdateUserForm from "../../components/user/user-form";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import CreateOrUpdateInvoiceForm from "../../components/invoice/invoice-form";
@@ -25,8 +24,6 @@ export default function EditInvoicePage() {
         });
     }
   }, [id]);
-
-  console.log("invoice: ", invoice);
 
   return (
     <>

@@ -13,7 +13,9 @@ export enum InvoiceStatus {
 
 export enum ERole {
   ROLE_ADMIN = "ROLE_ADMIN",
-  ROLE_USER = "ROLE_USER"
+  ROLE_USER = "ROLE_USER",
+  ROLE_FINISH_GOOD = "ROLE_FINISH_GOOD",
+  ROLE_FINANCE = "ROLE_FINANCE"
 }
 
 export interface Role {
