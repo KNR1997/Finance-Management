@@ -23,6 +23,8 @@ import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./routes/PrivateRoute";
 import Users from "./pages/Users";
 import CreateUserPage from "./pages/Users/create";
+import EditUserPage from "./pages/Users/edit";
+import EditInvoicePage from "./pages/Invoices/edit";
 
 export default function App() {
   return (
@@ -55,8 +57,11 @@ export default function App() {
               <Route path="/basic-tables" element={<BasicTables />} />
 
               <Route path="/invoices" element={<Invoices />} />
+              <Route path="/invoices/:id/edit" element={<EditInvoicePage />} />
+
               <Route path="/users" element={<Users />} />
               <Route path="/users/create" element={<CreateUserPage />} />
+              <Route path="/users/:id/edit" element={<EditUserPage />} />
 
               {/* Ui Elements */}
               <Route path="/alerts" element={<Alerts />} />

@@ -1,5 +1,5 @@
 export interface Invoice {
-  id: string;
+  id: number;
   invoiceNumber: string;
   value: number;
   fgsStatus: InvoiceStatus;

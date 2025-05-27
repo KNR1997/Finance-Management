@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router";
+import { PencilIcon } from "../../icons";
 import { User } from "../../types";
 import {
   Table,
@@ -15,7 +17,12 @@ export type IProps = {
   // onOrder: (current: string) => void;
 };
 export default function UserList({ users }: IProps) {
-  console.log("users: ", users);
+  const navigate = useNavigate();
+
+  const handleEdit = (id: number) => {
+    navigate(`/users/${id}/edit`);
+  };
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">
@@ -47,6 +54,12 @@ export default function UserList({ users }: IProps) {
               >
                 Email
               </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                Actions
+              </TableCell>
             </TableRow>
           </TableHeader>
 
@@ -65,6 +78,11 @@ export default function UserList({ users }: IProps) {
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {user.email}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  <button onClick={() => handleEdit(user.id)}>
+                    <PencilIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
+                  </button>
                 </TableCell>
               </TableRow>
             ))}

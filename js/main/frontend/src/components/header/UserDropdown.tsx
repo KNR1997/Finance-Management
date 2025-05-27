@@ -68,7 +68,7 @@ export default function UserDropdown() {
               {user?.firstName} {user?.lastName}
             </span>
             <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-              {user?.email}
+              {user?.email} - {user?.roles[0]}
             </span>
           </div>
 

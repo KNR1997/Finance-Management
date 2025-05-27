@@ -25,6 +25,13 @@ public class InvoiceController {
         return ResponseEntity.ok(invoiceList);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getInvoiceById(@PathVariable Long id) {
+        Invoice invoice = invoiceService.getInvoiceById(id);
+
+        return ResponseEntity.ok(invoice);
+    }
+
     @PostMapping
     public ResponseEntity<Invoice> createCourse(@RequestBody InvoiceDTO invoiceDTO) {
         Invoice invoice = invoiceService.createInvoice(invoiceDTO);

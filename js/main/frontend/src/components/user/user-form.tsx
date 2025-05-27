@@ -7,6 +7,7 @@ import Button from "../ui/button/Button";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import SelectInput from "../form/select-input";
+import { User } from "../../types";
 
 type FormValues = {
   firstName: string;
@@ -17,6 +18,15 @@ type FormValues = {
   password: string;
 };
 
+const defaultValues = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  username: "",
+  role: "",
+  password: "",
+};
+
 const validationSchema = yup.object().shape({
   firstName: yup.string().required("FirstName is required"),
   lastName: yup.string().required("LastName is required"),
@@ -25,9 +35,21 @@ const validationSchema = yup.object().shape({
   password: yup.string().required("Password is required"),
 });
 
-export default function CreateOrUpdateUserForm() {
+const roleOptions = [
+  { value: "ROLE_ADMIN", label: "Admin" },
+  { value: "ROLE_FINISH_GOOD", label: "Finish Good" },
+  { value: "ROLE_FINANCE", label: "Finance" },
+];
+
+interface Props {
+  initialValues?: User;
+}
+
+export default function CreateOrUpdateUserForm({ initialValues }: Props) {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+
+  console.log("initialValues: ", initialValues);
 
   const {
     control,
@@ -35,34 +57,49 @@ export default function CreateOrUpdateUserForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({
+    // @ts-ignore
+    defaultValues: initialValues
+      ? {
+          ...initialValues,
+          role: roleOptions.find((role) => role.value === "ROLE_FINISH_GOOD"),
+        }
+      : defaultValues,
     //@ts-ignore
     resolver: yupResolver(validationSchema),
   });
 
   const onSubmit = async (values: FormValues) => {
+    const input = {
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      username: values.username,
+      role: values.role,
+      password: values.password,
+    };
+
+    console.log("input: ", input);
+
     try {
-      const data = {
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        username: values.username,
-        role: values.role,
-        password: values.password,
-      };
-      const res = await axios.post("http://localhost:8080/api/users", data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      //   login(res.data.token); // Save token and reload
-      navigate("/users"); // ✅ Redirect after login
+      if (!initialValues) {
+        const res = await axios.post("http://localhost:8080/api/users", input, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        navigate("/users"); // ✅ Redirect after login
+      } else {
+        const res = await axios.put(
+          `http://localhost:8080/api/users/${initialValues.id}`,
+          input,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        navigate("/users"); // ✅ Redirect after login
+      }
     } catch (err) {
-      alert("Create User Failed!");
+      alert("Something went wrong!!!");
     }
   };
-
-  const roleOptions = [
-    { value: "ROLE_FINISH_GOOD", label: "Finish Good" },
-    { value: "ROLE_FINANCE", label: "Finance" },
-  ];
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -114,7 +151,6 @@ export default function CreateOrUpdateUserForm() {
           <Controller
             name="role"
             control={control}
-            defaultValue=""
             rules={{ required: "Role is required" }}
             render={({ field }) => (
               <SelectInput
@@ -141,7 +177,7 @@ export default function CreateOrUpdateUserForm() {
             errorMessage={errors.password?.message!}
           />
         </div>
-        <Button size="sm">Create User</Button>
+        <Button size="sm">{initialValues ? "Update" : "Create"} User</Button>
       </div>
     </form>
   );
