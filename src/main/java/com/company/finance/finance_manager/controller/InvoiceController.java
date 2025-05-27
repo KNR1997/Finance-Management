@@ -1,6 +1,7 @@
 package com.company.finance.finance_manager.controller;
 
 import com.company.finance.finance_manager.dto.InvoiceDTO;
+import com.company.finance.finance_manager.dto.UpdateInvoiceDTO;
 import com.company.finance.finance_manager.entity.Invoice;
 import com.company.finance.finance_manager.service.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,11 @@ public class InvoiceController {
         Invoice invoice = invoiceService.createInvoice(invoiceDTO);
         URI location = URI.create("/courses/" + invoice.getInvoiceNumber()); // assuming course has getSlug()
         return ResponseEntity.created(location).body(invoice);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Invoice> updateCourse(@PathVariable Long id, @RequestBody UpdateInvoiceDTO updateDto) {
+        Invoice response = invoiceService.updateInvoice(id, updateDto);
+        return ResponseEntity.ok(response);
     }
 }

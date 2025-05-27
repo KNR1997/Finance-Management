@@ -6,5 +6,6 @@ import lombok.Data;
 public class InvoiceDTO {
     private String invoiceNumber;
 
-    private String status;
+    private Integer value;
 }
+

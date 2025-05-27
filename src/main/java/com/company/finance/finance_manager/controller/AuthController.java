@@ -1,9 +1,6 @@
 package com.company.finance.finance_manager.controller;
 
-import com.company.finance.finance_manager.dto.AuthResponse;
-import com.company.finance.finance_manager.dto.LoginRequest;
-import com.company.finance.finance_manager.dto.RegisterRequest;
-import com.company.finance.finance_manager.dto.RegisterResponse;
+import com.company.finance.finance_manager.dto.*;
 import com.company.finance.finance_manager.entity.ERole;
 import com.company.finance.finance_manager.entity.Role;
 import com.company.finance.finance_manager.entity.User;
@@ -22,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -89,6 +87,14 @@ public class AuthController {
             return ResponseEntity.status(404).body("User not found");
         }
 
-        return ResponseEntity.ok(user); // You might want to return a DTO instead of the full User entity
+        // Convert roles to a set of role names
+        Set<ERole> roleNames = user.getRoles()
+                .stream()
+                .map(Role::getName) // Assuming getName() returns something like "ROLE_USER"
+                .collect(Collectors.toSet());
+
+        // Map User to MeDTO
+        MeDTO meDTO = new MeDTO(user.getFirstName(), user.getLastName(), user.getEmail(), roleNames);
+        return ResponseEntity.ok(meDTO); // You might want to return a DTO instead of the full User entity
     }
 }

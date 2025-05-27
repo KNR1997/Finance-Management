@@ -59,7 +59,10 @@ export default function CreateOrUpdateUserForm() {
     }
   };
 
-  const roleOptions = [{ value: "ROLE_USER", label: "User" }];
+  const roleOptions = [
+    { value: "ROLE_FINISH_GOOD", label: "Finish Good" },
+    { value: "ROLE_FINANCE", label: "Finance" },
+  ];
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

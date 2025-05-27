@@ -16,6 +16,10 @@ public class Invoice {
 
     private String invoiceNumber;
 
-    private String status;
+    private Integer value;
+
+    private EStatus fgsStatus;
+
+    private EStatus territoryStatus;
 
 }

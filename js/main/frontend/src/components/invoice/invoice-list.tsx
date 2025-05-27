@@ -1,4 +1,5 @@
-import { Invoice } from "../../types";
+import { Invoice, InvoiceStatus } from "../../types";
+import Badge from "../ui/badge/Badge";
 import {
   Table,
   TableBody,
@@ -38,7 +39,19 @@ export default function InvoiceList({ invoices }: IProps) {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Status
+                Value
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                FGS(Status)
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                Territory(Status)
               </TableCell>
             </TableRow>
           </TableHeader>
@@ -54,7 +67,35 @@ export default function InvoiceList({ invoices }: IProps) {
                   {invoice.invoiceNumber}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {invoice.status}
+                  {invoice.value}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  <Badge
+                    size="sm"
+                    color={
+                      invoice.fgsStatus === InvoiceStatus.COMPLETED
+                        ? "success"
+                        : invoice.fgsStatus === InvoiceStatus.PENDING
+                        ? "warning"
+                        : "error"
+                    }
+                  >
+                    {invoice.fgsStatus}
+                  </Badge>
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  <Badge
+                    size="sm"
+                    color={
+                      invoice.territoryStatus === InvoiceStatus.COMPLETED
+                        ? "success"
+                        : invoice.territoryStatus === InvoiceStatus.PENDING
+                        ? "warning"
+                        : "error"
+                    }
+                  >
+                    {invoice.territoryStatus}
+                  </Badge>
                 </TableCell>
               </TableRow>
             ))}

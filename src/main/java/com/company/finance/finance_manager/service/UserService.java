@@ -32,8 +32,8 @@ public class UserService {
     public User createUser(UserDTO userDTO) {
         User user = new User();
 
-        user.setFirstName(userDTO.getEmail());
-        user.setFirstName(userDTO.getEmail());
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
         user.setEmail(userDTO.getEmail());
         user.setUsername(userDTO.getUsername());
         user.setPassword(encoder.encode(userDTO.getPassword()));
