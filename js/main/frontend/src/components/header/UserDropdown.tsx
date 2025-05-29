@@ -8,8 +8,6 @@ export default function UserDropdown() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
-  console.log("user: ", user)
-
   const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {

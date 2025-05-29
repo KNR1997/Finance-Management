@@ -25,66 +25,141 @@ import Users from "./pages/Users";
 import CreateUserPage from "./pages/Users/create";
 import EditUserPage from "./pages/Users/edit";
 import EditInvoicePage from "./pages/Invoices/edit";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ToastContainer } from "react-toastify";
+import Requests from "./pages/Requests";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import { ERole } from "./types";
+import EditRequestPage from "./pages/Requests/edit";
 
 export default function App() {
+  const queryClient = new QueryClient();
+
   return (
     <>
-      <AuthProvider>
-        <Router>
-          <ScrollToTop />
-          <Routes>
-            {/* Dashboard Layout */}
-            <Route element={<AppLayout />}>
-              <Route
-                path="/"
-                element={
-                  <PrivateRoute>
-                    <Home />
-                  </PrivateRoute>
-                }
-              />
-              {/* <Route index path="/" element={<Home />} /> */}
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Router>
+            <ScrollToTop />
+            <Routes>
+              {/* Dashboard Layout */}
+              <Route element={<AppLayout />}>
+                <Route
+                  path="/"
+                  element={
+                    <PrivateRoute>
+                      <Home />
+                    </PrivateRoute>
+                  }
+                />
+                {/* <Route index path="/" element={<Home />} /> */}
 
-              {/* Others Page */}
-              <Route path="/profile" element={<UserProfiles />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/blank" element={<Blank />} />
+                {/* Others Page */}
+                {/* <Route path="/profile" element={<UserProfiles />} />
+                <Route path="/calendar" element={<Calendar />} />
+                <Route path="/blank" element={<Blank />} /> */}
 
-              {/* Forms */}
-              <Route path="/form-elements" element={<FormElements />} />
+                {/* Forms */}
+                {/* <Route path="/form-elements" element={<FormElements />} /> */}
 
-              {/* Tables */}
-              <Route path="/basic-tables" element={<BasicTables />} />
+                {/* Tables */}
+                {/* <Route path="/basic-tables" element={<BasicTables />} /> */}
 
-              <Route path="/invoices" element={<Invoices />} />
-              <Route path="/invoices/:id/edit" element={<EditInvoicePage />} />
+                <Route
+                  path="/invoices"
+                  element={
+                    <ProtectedRoute
+                      roles={[
+                        ERole.ROLE_FINANCE_HEAD,
+                        ERole.ROLE_FINANCE,
+                        ERole.ROLE_FINISH_GOOD,
+                        ERole.ROLE_FINISH_GOOD_HEAD,
+                      ]}
+                    >
+                      <Invoices />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/invoices/:id/edit"
+                  element={
+                    <ProtectedRoute
+                      roles={[
+                        ERole.ROLE_FINANCE_HEAD,
+                        ERole.ROLE_FINANCE,
+                        ERole.ROLE_FINISH_GOOD,
+                        ERole.ROLE_FINISH_GOOD_HEAD,
+                      ]}
+                    >
+                      <EditInvoicePage />
+                    </ProtectedRoute>
+                  }
+                />
 
-              <Route path="/users" element={<Users />} />
-              <Route path="/users/create" element={<CreateUserPage />} />
-              <Route path="/users/:id/edit" element={<EditUserPage />} />
+                <Route
+                  path="/requests"
+                  element={
+                    <ProtectedRoute
+                      roles={[
+                        ERole.ROLE_FINANCE_HEAD,
+                        ERole.ROLE_FINISH_GOOD_HEAD,
+                      ]}
+                    >
+                      <Requests />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/requests/:id/edit"
+                  element={
+                    <ProtectedRoute
+                      roles={[
+                        ERole.ROLE_FINANCE_HEAD,
+                        ERole.ROLE_FINISH_GOOD_HEAD,
+                      ]}
+                    >
+                      <EditRequestPage />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Ui Elements */}
-              <Route path="/alerts" element={<Alerts />} />
-              <Route path="/avatars" element={<Avatars />} />
-              <Route path="/badge" element={<Badges />} />
-              <Route path="/buttons" element={<Buttons />} />
-              <Route path="/images" element={<Images />} />
-              <Route path="/videos" element={<Videos />} />
+                {/* <Route path="/users" element={<Users />} /> */}
+                <Route
+                  path="/users"
+                  element={
+                    <ProtectedRoute roles={[ERole.ROLE_ADMIN]}>
+                      <Users />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/users/create" element={<CreateUserPage />} />
+                <Route path="/users/:id/edit" element={<EditUserPage />} />
 
-              {/* Charts */}
-              <Route path="/line-chart" element={<LineChart />} />
-              <Route path="/bar-chart" element={<BarChart />} />
-            </Route>
+                {/* Ui Elements */}
+                {/* <Route path="/alerts" element={<Alerts />} />
+                <Route path="/avatars" element={<Avatars />} />
+                <Route path="/badge" element={<Badges />} />
+                <Route path="/buttons" element={<Buttons />} />
+                <Route path="/images" element={<Images />} />
+                <Route path="/videos" element={<Videos />} /> */}
 
-            {/* Auth Layout */}
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
+                {/* Charts */}
+                {/* <Route path="/line-chart" element={<LineChart />} />
+                <Route path="/bar-chart" element={<BarChart />} /> */}
+              </Route>
 
-            {/* Fallback Route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router>
-      </AuthProvider>
+              {/* Auth Layout */}
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
+
+              {/* Fallback Route */}
+              <Route path="*" element={<NotFound />} />
+              <Route path="/notFound" element={<NotFound />} />
+            </Routes>
+          </Router>
+          <ToastContainer autoClose={2000} theme="colored" />
+        </AuthProvider>
+      </QueryClientProvider>
     </>
   );
 }

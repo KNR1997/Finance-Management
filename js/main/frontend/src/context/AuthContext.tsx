@@ -8,16 +8,17 @@ const AuthContext = createContext<any>(null);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const token = localStorage.getItem("token");
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem("token")); // sync token with state
 
   useEffect(() => {
     const fetchUser = async () => {
+      // console.log('useEffecttttttttttttt')
       if (token) {
         try {
           const res = await axios.get("/api/auth/me", {
             headers: { Authorization: `Bearer ${token}` },
           });
+          // console.log('setting userrrrrrrrrr: ', res.data)
           setUser(res.data);
         } catch (err) {
           console.error("Invalid token");
@@ -29,13 +30,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     fetchUser();
   }, [token]);
 
-  const login = (token: string) => {
-    localStorage.setItem("token", token);
+  const login = (newToken: string) => {
+    localStorage.setItem("token", newToken);
+    setToken(newToken); // trigger useEffect
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
+    setToken(null);
   };
 
   return (

@@ -48,7 +48,7 @@ export default function SignInForm() {
         data
       );
       login(res.data.token); // Save token and reload
-      navigate("/invoices"); // ✅ Redirect after login
+      navigate("/"); // ✅ Redirect after login
     } catch (err) {
       alert("Login failed");
     }

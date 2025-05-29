@@ -4,7 +4,6 @@ import com.company.finance.finance_manager.dto.InvoiceDTO;
 import com.company.finance.finance_manager.dto.UpdateInvoiceDTO;
 import com.company.finance.finance_manager.entity.EStatus;
 import com.company.finance.finance_manager.entity.Invoice;
-import com.company.finance.finance_manager.entity.User;
 import com.company.finance.finance_manager.exception.ResourceNotFoundException;
 import com.company.finance.finance_manager.repository.InvoiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ public class InvoiceService {
         return invoiceRepository.findAll();
     }
 
-    public Invoice getInvoiceById(Long id) {
+    public Invoice getInvoiceById(Integer id) {
         return invoiceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found with id: " + id));
     }
@@ -30,6 +29,7 @@ public class InvoiceService {
     public Invoice createInvoice(InvoiceDTO invoiceDTO) {
         Invoice invoice = new Invoice();
 
+        invoice.setCompanyName(invoiceDTO.getCompanyName());
         invoice.setInvoiceNumber(invoiceDTO.getInvoiceNumber());
         invoice.setValue(invoiceDTO.getValue());
         invoice.setFgsStatus(EStatus.PENDING);
@@ -38,7 +38,7 @@ public class InvoiceService {
         return invoiceRepository.save(invoice);
     }
 
-    public Invoice updateInvoice(Long id, UpdateInvoiceDTO updateInvoiceDTO) {
+    public Invoice updateInvoice(Integer id, UpdateInvoiceDTO updateInvoiceDTO) {
         Invoice invoice = invoiceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found with ID: " + id));
 

@@ -1,0 +1,87 @@
+package com.company.finance.finance_manager.service;
+
+import com.company.finance.finance_manager.dto.RequestDTO;
+import com.company.finance.finance_manager.dto.RequestPagedDataDTO;
+import com.company.finance.finance_manager.dto.RequestPaginatedDTO;
+import com.company.finance.finance_manager.dto.RequestUpdateDTO;
+import com.company.finance.finance_manager.entity.*;
+import com.company.finance.finance_manager.exception.ResourceNotFoundException;
+import com.company.finance.finance_manager.repository.InvoiceRepository;
+import com.company.finance.finance_manager.repository.RequestRepository;
+import com.company.finance.finance_manager.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class RequestService {
+
+    @Autowired
+    private RequestRepository requestRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private InvoiceRepository invoiceRepository;
+
+    public List<RequestPaginatedDTO> getAllRequests() {
+        List<Request> requests = requestRepository.findAll();
+        return requests.stream()
+                .map(RequestPaginatedDTO::new) // Use your constructor reference here
+                .collect(Collectors.toList());
+    }
+
+    public RequestPagedDataDTO getRequestById(Integer id) {
+        Request request = requestRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + id));
+        return new RequestPagedDataDTO(request);
+    }
+
+    public Request createRequest(RequestDTO requestDTO) {
+        // Get authenticated username
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        // Load the User entity from DB
+        User user = userRepository.findByUsername(username);
+
+        // Load the Invoice entity from DB
+        Invoice invoice = invoiceRepository.findById(requestDTO.getInvoiceId())
+                .orElseThrow(() -> new ResourceNotFoundException("Invoice not found with ID: " + requestDTO.getInvoiceId()));
+
+        Request request = new Request();
+        request.setInvoice(invoice);
+        request.setRequestType(requestDTO.getRequestType());
+        request.setStatus(EStatus.PENDING);
+        request.setCreated_by(user);
+
+        return requestRepository.save(request);
+    }
+
+    public Request updateRequest(Integer requestId, RequestUpdateDTO requestDTO) {
+        // Load the Invoice entity from DB
+        Request request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Invoice not found with ID: " + requestDTO.getId()));
+
+        if (requestDTO.getResponse() == EResponse.ACCEPT) {
+            Invoice invoice = invoiceRepository.findById(requestDTO.getInvoiceId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Invoice not found with ID: " + requestDTO.getInvoiceId()));
+
+            if (requestDTO.getRequestType() == ERequestType.FG_REQUEST) {
+                invoice.setFgsStatus(EStatus.PENDING);
+            } else {
+                invoice.setTerritoryStatus(EStatus.PENDING);
+            }
+            invoiceRepository.save(invoice);
+        }
+
+        request.setStatus(EStatus.COMPLETED);
+
+        return requestRepository.save(request);
+    }
+}

@@ -1,26 +1,34 @@
 export interface Invoice {
   id: number;
+  companyName: string;
   invoiceNumber: string;
   value: number;
-  fgsStatus: InvoiceStatus;
-  territoryStatus: InvoiceStatus;
+  fgsStatus: EStatus;
+  territoryStatus: EStatus;
 }
 
-export enum InvoiceStatus {
+export enum EStatus {
   PENDING = "PENDING",
-  COMPLETED = "COMPLETED"
+  COMPLETED = "COMPLETED",
 }
+
+export enum ERequestType {
+  FG_REQUEST = "FG_REQUEST",
+  FINANCE_REQUEST = "FINANCE_REQUEST",
+}
+
 
 export enum ERole {
   ROLE_ADMIN = "ROLE_ADMIN",
-  ROLE_USER = "ROLE_USER",
+  ROLE_FINISH_GOOD_HEAD = "ROLE_FINISH_GOOD_HEAD",
   ROLE_FINISH_GOOD = "ROLE_FINISH_GOOD",
-  ROLE_FINANCE = "ROLE_FINANCE"
+  ROLE_FINANCE_HEAD = "ROLE_FINANCE_HEAD",
+  ROLE_FINANCE = "ROLE_FINANCE",
 }
 
 export interface Role {
   id: number;
-  name: string
+  name: string;
 }
 
 export interface User {
@@ -29,5 +37,18 @@ export interface User {
   lastName: string;
   email: string;
   username: string;
-  roles: Role[]
+  roles: Role[];
+}
+
+export interface Request {
+  id: number;
+  invoiceId: number;
+  invoiceNumber: string;
+  requestType: ERequestType;
+  status: EStatus;
+}
+
+export interface CreateRequestInput {
+  invoiceId: number;
+  requestType: string;
 }

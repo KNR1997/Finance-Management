@@ -3,6 +3,7 @@ package com.company.finance.finance_manager.service;
 import com.company.finance.finance_manager.dto.UserDTO;
 import com.company.finance.finance_manager.entity.Role;
 import com.company.finance.finance_manager.entity.User;
+import com.company.finance.finance_manager.exception.BadRequestException;
 import com.company.finance.finance_manager.exception.ResourceNotFoundException;
 import com.company.finance.finance_manager.repository.RoleRepository;
 import com.company.finance.finance_manager.repository.UserRepository;
@@ -36,8 +37,11 @@ public class UserService {
     }
 
     public User createUser(UserDTO userDTO) {
-        User user = new User();
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new BadRequestException("User with email '" + userDTO.getEmail() + "' already exists.");
+        }
 
+        User user = new User();
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setEmail(userDTO.getEmail());

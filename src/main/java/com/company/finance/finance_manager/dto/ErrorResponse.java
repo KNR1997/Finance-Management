@@ -1,10 +1,10 @@
 package com.company.finance.finance_manager.dto;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 public class ErrorResponse {
     private int status;
     private String message;

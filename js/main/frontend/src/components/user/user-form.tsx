@@ -4,10 +4,12 @@ import Label from "../form/Label";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Button from "../ui/button/Button";
-import axios from "axios";
 import { useNavigate } from "react-router";
 import SelectInput from "../form/select-input";
-import { User } from "../../types";
+import { ERole, User } from "../../types";
+import { useMutation } from "@tanstack/react-query";
+import { createUser, updateUser } from "../../services/userService";
+import { toast } from "react-toastify";
 
 type FormValues = {
   firstName: string;
@@ -36,9 +38,11 @@ const validationSchema = yup.object().shape({
 });
 
 const roleOptions = [
-  { value: "ROLE_ADMIN", label: "Admin" },
-  { value: "ROLE_FINISH_GOOD", label: "Finish Good" },
-  { value: "ROLE_FINANCE", label: "Finance" },
+  { value: ERole.ROLE_ADMIN, label: "Admin" },
+  { value: ERole.ROLE_FINISH_GOOD_HEAD, label: "Finish Good Head" },
+  { value: ERole.ROLE_FINISH_GOOD, label: "Finish Good" },
+  { value: ERole.ROLE_FINANCE_HEAD, label: "Finance Head" },
+  { value: ERole.ROLE_FINANCE, label: "Finance" },
 ];
 
 interface Props {
@@ -47,9 +51,6 @@ interface Props {
 
 export default function CreateOrUpdateUserForm({ initialValues }: Props) {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-
-  console.log("initialValues: ", initialValues);
 
   const {
     control,
@@ -68,6 +69,28 @@ export default function CreateOrUpdateUserForm({ initialValues }: Props) {
     resolver: yupResolver(validationSchema),
   });
 
+  const createMutation = useMutation({
+    mutationFn: createUser,
+    onSuccess: () => {
+      navigate("/users");
+      toast.success("Successfully created!");
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message);
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: updateUser,
+    onSuccess: () => {
+      navigate("/users");
+      toast.success("Successfully updated!");
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message);
+    },
+  });
+
   const onSubmit = async (values: FormValues) => {
     const input = {
       firstName: values.firstName,
@@ -78,26 +101,10 @@ export default function CreateOrUpdateUserForm({ initialValues }: Props) {
       password: values.password,
     };
 
-    console.log("input: ", input);
-
-    try {
-      if (!initialValues) {
-        const res = await axios.post("http://localhost:8080/api/users", input, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        navigate("/users"); // ✅ Redirect after login
-      } else {
-        const res = await axios.put(
-          `http://localhost:8080/api/users/${initialValues.id}`,
-          input,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        navigate("/users"); // ✅ Redirect after login
-      }
-    } catch (err) {
-      alert("Something went wrong!!!");
+    if (!initialValues) {
+      createMutation.mutate(input);
+    } else {
+      updateMutation.mutate({ id: initialValues.id, input });
     }
   };
 

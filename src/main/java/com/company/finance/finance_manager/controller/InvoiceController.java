@@ -26,7 +26,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getInvoiceById(@PathVariable Long id) {
+    public ResponseEntity<?> getInvoiceById(@PathVariable Integer id) {
         Invoice invoice = invoiceService.getInvoiceById(id);
 
         return ResponseEntity.ok(invoice);
@@ -40,7 +40,7 @@ public class InvoiceController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Invoice> updateCourse(@PathVariable Long id, @RequestBody UpdateInvoiceDTO updateDto) {
+    public ResponseEntity<Invoice> updateCourse(@PathVariable Integer id, @RequestBody UpdateInvoiceDTO updateDto) {
         Invoice response = invoiceService.updateInvoice(id, updateDto);
         return ResponseEntity.ok(response);
     }

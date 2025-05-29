@@ -1,7 +1,6 @@
 package com.company.finance.finance_manager.exception;
 
 import com.company.finance.finance_manager.dto.ErrorResponse;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

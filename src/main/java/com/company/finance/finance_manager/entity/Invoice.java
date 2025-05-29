@@ -8,18 +8,22 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Invoice {
+public class Invoice extends TimeAuditModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    private String companyName;
+
     private String invoiceNumber;
 
-    private Integer value;
+    private Double value;
 
     private EStatus fgsStatus;
 
     private EStatus territoryStatus;
+
+//    private Date created
 
 }

@@ -4,8 +4,10 @@ import lombok.Data;
 
 @Data
 public class InvoiceDTO {
+    private String companyName;
+
     private String invoiceNumber;
 
-    private Integer value;
+    private Double value;
 }
 

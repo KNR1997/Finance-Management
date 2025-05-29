@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { Invoice, EStatus } from "../../types";
+import { ERequestType, ERole, EStatus, Request } from "../../types";
 import Badge from "../ui/badge/Badge";
 import {
   Table,
@@ -8,20 +8,56 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { PencilIcon } from "../../icons";
+import { LockIcon, PencilIcon } from "../../icons";
+import { useAuth } from "../../context/AuthContext";
 
 export type IProps = {
-  invoices: Invoice[];
+  requests: Request[];
   // paginatorInfo: MappedPaginatorInfo | null;
   // onPagination: (key: number) => void;
   // onSort: (current: any) => void;
   // onOrder: (current: string) => void;
 };
-export default function InvoiceList({ invoices }: IProps) {
+export default function RequestList({ requests }: IProps) {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleEdit = (id: number) => {
-    navigate(`/invoices/${id}/edit`);
+    navigate(`/requests/${id}/edit`);
+  };
+
+  // const enableActionSection = (requestType: ERequestType) => {
+  //   if (requestType == ERequestType.FG_REQUEST) {
+  //     if (user?.roles?.includes(ERole.ROLE_FINANCE_HEAD)) {
+  //       return true;
+  //     } else if (user?.roles?.includes(ERole.ROLE_FINISH_GOOD_HEAD)) {
+  //       return false;
+  //     }
+  //   } else if (requestType == ERequestType.FINANCE_REQUEST) {
+  //     if (user?.roles?.includes(ERole.ROLE_FINISH_GOOD_HEAD)) {
+  //       return true;
+  //     } else if (user?.roles?.includes(ERole.ROLE_FINANCE_HEAD)) {
+  //       return false;
+  //     }
+  //   }
+  // };
+
+  const enableActionSection = (request: Request): boolean => {
+    if (!user?.roles) return false;
+
+    // ✅ Disable if request is completed
+    if (request.status === EStatus.COMPLETED) {
+      return false;
+    }
+
+    const hasRole = (role: ERole) => user.roles.includes(role);
+
+    return (
+      (request.requestType === ERequestType.FG_REQUEST &&
+        hasRole(ERole.ROLE_FINANCE_HEAD)) ||
+      (request.requestType === ERequestType.FINANCE_REQUEST &&
+        hasRole(ERole.ROLE_FINISH_GOOD_HEAD))
+    );
   };
 
   return (
@@ -31,18 +67,6 @@ export default function InvoiceList({ invoices }: IProps) {
           {/* Table Header */}
           <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
             <TableRow>
-              {/* <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Id
-              </TableCell> */}
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Company Name
-              </TableCell>
               <TableCell
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
@@ -53,19 +77,13 @@ export default function InvoiceList({ invoices }: IProps) {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Value
+                Type
               </TableCell>
               <TableCell
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                FGS(Status)
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Territory(Status)
+                Status
               </TableCell>
               <TableCell
                 isHeader
@@ -78,52 +96,50 @@ export default function InvoiceList({ invoices }: IProps) {
 
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {invoices.map((invoice) => (
-              <TableRow key={invoice.id}>
+            {requests.map((request) => (
+              <TableRow key={request.id}>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  {request.invoiceNumber}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  {request.requestType}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  <Badge
+                    size="sm"
+                    color={
+                      request.status === EStatus.COMPLETED
+                        ? "success"
+                        : request.status === EStatus.PENDING
+                        ? "warning"
+                        : "error"
+                    }
+                  >
+                    {request.status}
+                  </Badge>
+                </TableCell>
                 {/* <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {invoice.id}
+                  <Badge
+                    size="sm"
+                    color={
+                      request.territoryStatus === InvoiceStatus.COMPLETED
+                        ? "success"
+                        : request.territoryStatus === InvoiceStatus.PENDING
+                        ? "warning"
+                        : "error"
+                    }
+                  >
+                    {request.territoryStatus}
+                  </Badge>
                 </TableCell> */}
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {invoice.companyName ? invoice.companyName : "_"}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {invoice.invoiceNumber}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {invoice.value}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  <Badge
-                    size="sm"
-                    color={
-                      invoice.fgsStatus === EStatus.COMPLETED
-                        ? "success"
-                        : invoice.fgsStatus === EStatus.PENDING
-                        ? "warning"
-                        : "error"
-                    }
-                  >
-                    {invoice.fgsStatus}
-                  </Badge>
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  <Badge
-                    size="sm"
-                    color={
-                      invoice.territoryStatus === EStatus.COMPLETED
-                        ? "success"
-                        : invoice.territoryStatus === EStatus.PENDING
-                        ? "warning"
-                        : "error"
-                    }
-                  >
-                    {invoice.territoryStatus}
-                  </Badge>
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  <button onClick={() => handleEdit(invoice.id)}>
-                    <PencilIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
-                  </button>
+                  {enableActionSection(request) ? (
+                    <button onClick={() => handleEdit(request.id)}>
+                      <PencilIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
+                    </button>
+                  ) : (
+                    <LockIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
+                  )}
                 </TableCell>
               </TableRow>
             ))}
