@@ -58,6 +58,7 @@ export default function CreateOrUpdateRequestForm({ initialValues }: Props) {
   });
 
   const onSubmit = async (values: FormValues) => {
+    console.log("onsubmit executed");
     const input = {
       id: initialValues?.id,
       invoiceId: initialValues?.invoiceId,
@@ -71,13 +72,34 @@ export default function CreateOrUpdateRequestForm({ initialValues }: Props) {
   };
 
   const handleAccept = () => {
-    setValue("response", EResponse.Accept);
-    handleSubmit(onSubmit)();
+    // setValue("response", EResponse.Accept);
+
+    if (initialValues) {
+      const input = {
+        id: initialValues.id,
+              requestType: initialValues.requestType,
+
+        invoiceId: initialValues?.invoiceId,
+        response: EResponse.Accept,
+      };
+      updateMutation.mutate({ id: initialValues.id, input });
+    }
   };
 
   const handleDecline = () => {
-    setValue("response", EResponse.Decline);
-    handleSubmit(onSubmit)();
+    // setValue("response", EResponse.Decline);
+
+    if (initialValues) {
+      const input = {
+        id: initialValues.id,
+              requestType: initialValues.requestType,
+
+        invoiceId: initialValues?.invoiceId,
+
+        response: EResponse.Decline,
+      };
+      updateMutation.mutate({ id: initialValues.id, input });
+    }
   };
 
   return (
@@ -102,23 +124,16 @@ export default function CreateOrUpdateRequestForm({ initialValues }: Props) {
               errorMessage={errors.requestType?.message!}
             />
           </div>
-                          <div className="flex gap-5">
-            <Button size="sm" onClick={handleAccept}>
-              Accept
-            </Button>
-            <Button
-              size="sm"
-              
-              className="bg-red-500"
-              onClick={handleDecline}
-            >
-              Decline
-            </Button>
-          </div>
         </div>
-        
       </form>
-
+      <div className="flex gap-5">
+        <Button size="sm" onClick={handleAccept}>
+          Accept
+        </Button>
+        <Button size="sm" className="bg-red-500" onClick={handleDecline}>
+          Decline
+        </Button>
+      </div>
     </>
   );
 }

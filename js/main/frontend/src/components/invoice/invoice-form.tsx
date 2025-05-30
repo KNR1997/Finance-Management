@@ -42,6 +42,7 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
     control,
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<FormValues>({
     // @ts-ignore
@@ -90,15 +91,27 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
   };
 
   const enableFGStatusEdit = (): boolean => {
-    return user?.roles?.includes(ERole.ROLE_FINISH_GOOD);
+    const fgsStatus = watch("fgsStatus");
+    return (
+      user?.roles?.includes(ERole.ROLE_FINISH_GOOD) &&
+      fgsStatus != EStatus.COMPLETED
+    );
   };
 
   const enableTerritoryStatusEdit = (): boolean => {
-    return user?.roles?.includes(ERole.ROLE_FINANCE);
+    const territoryStatus = watch("territoryStatus");
+
+    return (
+      user?.roles?.includes(ERole.ROLE_FINANCE) &&
+      territoryStatus != EStatus.COMPLETED
+    );
   };
 
   const showEditButton = (): boolean => {
-    return user?.roles?.includes(ERole.ROLE_FINISH_GOOD || ERole.ROLE_FINANCE);
+    return (
+      user?.roles?.includes(ERole.ROLE_FINISH_GOOD) ||
+      user?.roles?.includes(ERole.ROLE_FINANCE)
+    );
   };
 
   const showRequestEditFgStatusButton = (): boolean => {

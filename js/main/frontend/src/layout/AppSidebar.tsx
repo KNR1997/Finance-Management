@@ -13,6 +13,7 @@ import {
   PieChartIcon,
   PlugInIcon,
   TableIcon,
+  FileIcon,
   UserCircleIcon,
   UserIcon,
 } from "../icons";
@@ -66,14 +67,11 @@ const navItems: NavItem[] = [
       ERole.ROLE_FINANCE,
     ],
   },
-    {
+  {
     name: "Requests",
     icon: <TableIcon />,
     subItems: [{ name: "All Requests", path: "/requests", pro: false }],
-    roles: [
-      ERole.ROLE_FINISH_GOOD_HEAD,
-      ERole.ROLE_FINANCE_HEAD,
-    ],
+    roles: [ERole.ROLE_FINISH_GOOD_HEAD, ERole.ROLE_FINANCE_HEAD],
   },
   {
     name: "Users",
@@ -83,6 +81,17 @@ const navItems: NavItem[] = [
       { name: "Create user", path: "/users/create", pro: false },
     ],
     roles: [ERole.ROLE_ADMIN],
+  },
+  {
+    name: "Logs",
+    icon: <FileIcon />,
+    subItems: [{ name: "All logs", path: "/logs", pro: false }],
+    roles: [
+      ERole.ROLE_FINISH_GOOD_HEAD,
+      ERole.ROLE_FINANCE_HEAD,
+      ERole.ROLE_FINANCE,
+      ERole.ROLE_FINISH_GOOD,
+    ],
   },
   // {
   //   name: "Pages",

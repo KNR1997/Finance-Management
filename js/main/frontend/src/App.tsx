@@ -31,6 +31,7 @@ import Requests from "./pages/Requests";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { ERole } from "./types";
 import EditRequestPage from "./pages/Requests/edit";
+import Logs from "./pages/Logs";
 
 export default function App() {
   const queryClient = new QueryClient();
@@ -134,6 +135,22 @@ export default function App() {
                 />
                 <Route path="/users/create" element={<CreateUserPage />} />
                 <Route path="/users/:id/edit" element={<EditUserPage />} />
+
+                <Route
+                  path="/logs"
+                  element={
+                    <ProtectedRoute
+                      roles={[
+                        ERole.ROLE_FINANCE,
+                        ERole.ROLE_FINANCE_HEAD,
+                        ERole.ROLE_FINISH_GOOD,
+                        ERole.ROLE_FINISH_GOOD_HEAD,
+                      ]}
+                    >
+                      <Logs />
+                    </ProtectedRoute>
+                  }
+                />
 
                 {/* Ui Elements */}
                 {/* <Route path="/alerts" element={<Alerts />} />

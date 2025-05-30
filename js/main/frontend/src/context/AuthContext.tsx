@@ -32,6 +32,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = (newToken: string) => {
     localStorage.setItem("token", newToken);
+    setLoading(true);
     setToken(newToken); // trigger useEffect
   };
 

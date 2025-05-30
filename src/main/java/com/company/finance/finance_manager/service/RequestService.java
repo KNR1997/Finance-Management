@@ -29,6 +29,9 @@ public class RequestService {
     @Autowired
     private InvoiceRepository invoiceRepository;
 
+    @Autowired
+    private InvoiceStatusAuditService invoiceStatusAuditService;
+
     public List<RequestPaginatedDTO> getAllRequests() {
         List<Request> requests = requestRepository.findAll();
         return requests.stream()
@@ -68,20 +71,43 @@ public class RequestService {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found with ID: " + requestDTO.getId()));
 
+        String currentUser = getCurrentUsername(); // Fetch from SecurityContext or Auth
+
         if (requestDTO.getResponse() == EResponse.ACCEPT) {
             Invoice invoice = invoiceRepository.findById(requestDTO.getInvoiceId())
                     .orElseThrow(() -> new ResourceNotFoundException("Invoice not found with ID: " + requestDTO.getInvoiceId()));
 
             if (requestDTO.getRequestType() == ERequestType.FG_REQUEST) {
+                invoiceStatusAuditService.saveStatusAudit(
+                        invoice.getInvoiceNumber(),
+                        "fgsStatus",
+                        String.valueOf(invoice.getFgsStatus()),
+                        String.valueOf(EStatus.PENDING),
+                        currentUser
+                );
                 invoice.setFgsStatus(EStatus.PENDING);
-            } else {
+            } else if (requestDTO.getRequestType() == ERequestType.FINANCE_REQUEST) {
+                invoiceStatusAuditService.saveStatusAudit(
+                        invoice.getInvoiceNumber(),
+                        "territoryStatus",
+                        String.valueOf(invoice.getFgsStatus()),
+                        String.valueOf(EStatus.PENDING),
+                        currentUser
+                );
                 invoice.setTerritoryStatus(EStatus.PENDING);
             }
+
             invoiceRepository.save(invoice);
         }
 
         request.setStatus(EStatus.COMPLETED);
 
         return requestRepository.save(request);
+    }
+
+    private String getCurrentUsername() {
+        // Example using Spring Security
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null ? authentication.getName() : "SYSTEM";
     }
 }

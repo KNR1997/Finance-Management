@@ -6,22 +6,25 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @Entity
-public class Invoice extends TimeAuditModel {
-
+public class InvoiceStatusAudit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    private String companyName;
+    private Long id;
 
     private String invoiceNumber;
 
-    private Double value;
+    private String statusField; // "fgsStatus" or "territoryStatus"
 
-    private EStatus fgsStatus;
+    private String oldValue;
 
-    private EStatus territoryStatus;
+    private String newValue;
+
+    private String updatedBy;
+
+    private LocalDateTime updatedAt;
 
 }

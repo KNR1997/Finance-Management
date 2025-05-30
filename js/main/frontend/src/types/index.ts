@@ -7,6 +7,16 @@ export interface Invoice {
   territoryStatus: EStatus;
 }
 
+export interface Log {
+  id: number;
+  invoiceNumber: number;
+  statusField: string;
+  oldValue: string;
+  newValue: string;
+  updatedBy: string;
+  updatedAt: string;
+}
+
 export enum EStatus {
   PENDING = "PENDING",
   COMPLETED = "COMPLETED",
@@ -16,7 +26,6 @@ export enum ERequestType {
   FG_REQUEST = "FG_REQUEST",
   FINANCE_REQUEST = "FINANCE_REQUEST",
 }
-
 
 export enum ERole {
   ROLE_ADMIN = "ROLE_ADMIN",
