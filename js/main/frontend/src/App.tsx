@@ -31,7 +31,7 @@ import Requests from "./pages/Requests";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { ERole } from "./types";
 import EditRequestPage from "./pages/Requests/edit";
-import Logs from "./pages/Logs";
+import Logs from "./pages/InvoiceStatusAudits";
 
 export default function App() {
   const queryClient = new QueryClient();

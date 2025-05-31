@@ -4,9 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import Loader from "../../components/ui/loader/loader";
 import ErrorMessage from "../../components/ui/error-message";
 import { fetchLogs } from "../../services/LogService";
-import LogList from "../../components/log/log-list";
+import LogList from "../../components/invoiceStatusAudit/log-list";
 
-export default function Logs() {
+export default function InvoiceStatusAudits() {
   const {
     data: logs = [],
     isLoading,
