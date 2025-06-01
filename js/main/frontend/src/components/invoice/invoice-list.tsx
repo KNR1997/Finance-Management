@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { Invoice, EStatus } from "../../types";
+import { Invoice, EStatus, MappedPaginatorInfo } from "../../types";
 import Badge from "../ui/badge/Badge";
 import {
   Table,
@@ -9,15 +9,22 @@ import {
   TableRow,
 } from "../ui/table";
 import { PencilIcon } from "../../icons";
+import Pagination from "../ui/pagination";
+import "rc-pagination/assets/index.css";
 
 export type IProps = {
   invoices: Invoice[];
-  // paginatorInfo: MappedPaginatorInfo | null;
-  // onPagination: (key: number) => void;
-  // onSort: (current: any) => void;
-  // onOrder: (current: string) => void;
+  paginatorInfo: MappedPaginatorInfo | null;
+  onPagination: (key: number) => void;
+  onSort: (current: any) => void;
+  onOrder: (current: string) => void;
 };
-export default function InvoiceList({ invoices }: IProps) {
+
+export default function InvoiceList({
+  invoices,
+  onPagination,
+  paginatorInfo,
+}: IProps) {
   const navigate = useNavigate();
 
   const handleEdit = (id: number) => {
@@ -53,19 +60,25 @@ export default function InvoiceList({ invoices }: IProps) {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Value
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
                 FGS(Status)
               </TableCell>
               <TableCell
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Territory(Status)
+                Finance(Status)
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                Value
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                CreatedAt
               </TableCell>
               <TableCell
                 isHeader
@@ -90,9 +103,6 @@ export default function InvoiceList({ invoices }: IProps) {
                   {invoice.invoiceNumber}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {invoice.value}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <Badge
                     size="sm"
                     color={
@@ -110,15 +120,21 @@ export default function InvoiceList({ invoices }: IProps) {
                   <Badge
                     size="sm"
                     color={
-                      invoice.territoryStatus === EStatus.COMPLETED
+                      invoice.financeStatus === EStatus.COMPLETED
                         ? "success"
-                        : invoice.territoryStatus === EStatus.PENDING
+                        : invoice.financeStatus === EStatus.PENDING
                         ? "warning"
                         : "error"
                     }
                   >
-                    {invoice.territoryStatus}
+                    {invoice.financeStatus}
                   </Badge>
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  {invoice.value}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  {new Date(invoice.createdAt).toLocaleString()}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <button onClick={() => handleEdit(invoice.id)}>
@@ -129,6 +145,16 @@ export default function InvoiceList({ invoices }: IProps) {
             ))}
           </TableBody>
         </Table>
+        {!!paginatorInfo?.total && (
+          <div className="flex items-center justify-end pb-2">
+            <Pagination
+              total={paginatorInfo.total}
+              current={paginatorInfo.currentPage}
+              pageSize={paginatorInfo.perPage}
+              onChange={onPagination}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

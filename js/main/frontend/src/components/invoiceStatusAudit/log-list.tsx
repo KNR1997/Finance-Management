@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { EStatus, Log } from "../../types";
+import { EStatus, InvoiceStatusAudit, MappedPaginatorInfo } from "../../types";
 import {
   Table,
   TableBody,
@@ -8,15 +8,17 @@ import {
   TableRow,
 } from "../ui/table";
 import Badge from "../ui/badge/Badge";
+import Pagination from "rc-pagination";
 
 export type IProps = {
-  logs: Log[];
-  // paginatorInfo: MappedPaginatorInfo | null;
-  // onPagination: (key: number) => void;
-  // onSort: (current: any) => void;
-  // onOrder: (current: string) => void;
+  logs: InvoiceStatusAudit[];
+  paginatorInfo: MappedPaginatorInfo | null;
+  onPagination: (key: number) => void;
+  onSort: (current: any) => void;
+  onOrder: (current: string) => void;
 };
-export default function LogList({ logs }: IProps) {
+
+export default function LogList({ logs, onPagination, paginatorInfo }: IProps) {
   const navigate = useNavigate();
 
   const handleEdit = (id: number) => {
@@ -126,6 +128,16 @@ export default function LogList({ logs }: IProps) {
             ))}
           </TableBody>
         </Table>
+        {!!paginatorInfo?.total && (
+          <div className="flex items-center justify-end pb-2">
+            <Pagination
+              total={paginatorInfo.total}
+              current={paginatorInfo.currentPage}
+              pageSize={paginatorInfo.perPage}
+              onChange={onPagination}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

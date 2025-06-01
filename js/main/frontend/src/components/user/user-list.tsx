@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import { PencilIcon } from "../../icons";
-import { User } from "../../types";
+import { MappedPaginatorInfo, User } from "../../types";
 import {
   Table,
   TableBody,
@@ -8,15 +8,21 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import Pagination from "../ui/pagination";
 
 export type IProps = {
   users: User[];
-  // paginatorInfo: MappedPaginatorInfo | null;
-  // onPagination: (key: number) => void;
-  // onSort: (current: any) => void;
-  // onOrder: (current: string) => void;
+  paginatorInfo: MappedPaginatorInfo | null;
+  onPagination: (key: number) => void;
+  onSort: (current: any) => void;
+  onOrder: (current: string) => void;
 };
-export default function UserList({ users }: IProps) {
+
+export default function UserList({
+  users,
+  onPagination,
+  paginatorInfo,
+}: IProps) {
   const navigate = useNavigate();
 
   const handleEdit = (id: number) => {
@@ -88,6 +94,16 @@ export default function UserList({ users }: IProps) {
             ))}
           </TableBody>
         </Table>
+        {!!paginatorInfo?.total && (
+          <div className="flex items-center justify-end pb-2">
+            <Pagination
+              total={paginatorInfo.total}
+              current={paginatorInfo.currentPage}
+              pageSize={paginatorInfo.perPage}
+              onChange={onPagination}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

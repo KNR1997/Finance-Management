@@ -1,17 +1,22 @@
 package com.company.finance.finance_manager.controller;
 
+import com.company.finance.finance_manager.dto.PaginatedResponse;
 import com.company.finance.finance_manager.dto.UserDTO;
 import com.company.finance.finance_manager.dto.UserPageDataDTO;
 import com.company.finance.finance_manager.entity.ERole;
 import com.company.finance.finance_manager.entity.Role;
 import com.company.finance.finance_manager.entity.User;
 import com.company.finance.finance_manager.service.UserService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,10 +27,25 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @PostConstruct
+    public void initRoleAndUser() {
+        userService.initRole();
+    }
+
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> userList = userService.getAllUsers();
-        return ResponseEntity.ok(userList);
+    public ResponseEntity<PaginatedResponse<User>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sort,
+            @RequestParam(defaultValue = "desc") String direction
+    ) {
+        Sort sortOrder = Sort.by(Sort.Direction.fromString(direction), sort);
+        Pageable pageable = PageRequest.of(page, size, sortOrder);
+
+        Page<User> userPage = userService.getAllUsers(pageable);
+
+        PaginatedResponse<User> response = new PaginatedResponse<>(userPage);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping

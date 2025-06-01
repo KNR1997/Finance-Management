@@ -1,34 +1,29 @@
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
-import axios from "axios";
 import UserList from "../../components/user/user-list";
-import { useQuery } from "@tanstack/react-query";
 import Loader from "../../components/ui/loader/loader";
 import ErrorMessage from "../../components/ui/error-message";
-
-const fetchUsers = async () => {
-  const token = localStorage.getItem("token");
-  const res = await axios.get("/api/users", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return res.data;
-};
+import { useUsersQuery } from "../../data/user";
+import { useState } from "react";
+import { SortOrder } from "../../types";
 
 export default function Users() {
-  const {
-    data: users = [],
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["users"],
-    queryFn: fetchUsers,
+  const [page, setPage] = useState(1);
+  const [orderBy, setOrder] = useState("id");
+  const [sortedBy, setColumn] = useState<SortOrder>(SortOrder.Desc);
+
+  const { users, loading, error, paginatorInfo } = useUsersQuery({
+    page,
+    orderBy,
+    sortedBy,
   });
 
-  if (isLoading) return <Loader text="Loading..." />;
-  if (isError) return <ErrorMessage message={error.message} />;
+  if (loading) return <Loader text="Loading..." />;
+  if (error) return <ErrorMessage message={error.message} />;
+
+  function handlePagination(current: number) {
+    setPage(current);
+  }
 
   return (
     <>
@@ -38,7 +33,13 @@ export default function Users() {
       />
       <PageBreadcrumb pageTitle="Users" />
       <div className="space-y-6">
-        <UserList users={users} />
+        <UserList
+          users={users}
+          paginatorInfo={paginatorInfo}
+          onPagination={handlePagination}
+          onOrder={setOrder}
+          onSort={setColumn}
+        />
       </div>
     </>
   );
