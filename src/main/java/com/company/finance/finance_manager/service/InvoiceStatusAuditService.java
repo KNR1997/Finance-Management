@@ -3,6 +3,8 @@ package com.company.finance.finance_manager.service;
 import com.company.finance.finance_manager.entity.InvoiceStatusAudit;
 import com.company.finance.finance_manager.repository.InvoiceStatusAuditRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,8 +16,8 @@ public class InvoiceStatusAuditService {
     @Autowired
     private InvoiceStatusAuditRepository auditRepository;
 
-    public List<InvoiceStatusAudit> getAllInvoices() {
-        return auditRepository.findAll();
+    public Page<InvoiceStatusAudit> getAllInvoices(Pageable pageable) {
+        return auditRepository.findAll(pageable);
     }
 
     public void saveStatusAudit(String invoiceNumber,

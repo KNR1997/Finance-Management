@@ -89,12 +89,12 @@ public class RequestService {
             } else if (requestDTO.getRequestType() == ERequestType.FINANCE_REQUEST) {
                 invoiceStatusAuditService.saveStatusAudit(
                         invoice.getInvoiceNumber(),
-                        "territoryStatus",
+                        "financeStatus",
                         String.valueOf(invoice.getFgsStatus()),
                         String.valueOf(EStatus.PENDING),
                         currentUser
                 );
-                invoice.setTerritoryStatus(EStatus.PENDING);
+                invoice.setFinanceStatus(EStatus.PENDING);
             }
 
             invoiceRepository.save(invoice);

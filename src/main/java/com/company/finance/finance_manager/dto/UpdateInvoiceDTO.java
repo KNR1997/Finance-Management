@@ -7,5 +7,5 @@ import lombok.Data;
 public class UpdateInvoiceDTO {
     private EStatus fgsStatus;
 
-    private EStatus territoryStatus;
+    private EStatus financeStatus;
 }

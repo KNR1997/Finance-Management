@@ -22,6 +22,6 @@ public class Invoice extends TimeAuditModel {
 
     private EStatus fgsStatus;
 
-    private EStatus territoryStatus;
+    private EStatus financeStatus;
 
 }

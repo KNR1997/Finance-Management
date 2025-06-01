@@ -15,14 +15,14 @@ type FormValues = {
   invoiceNumber: string;
   value: string;
   fgsStatus: string;
-  territoryStatus: string;
+  financeStatus: string;
 };
 
 const defaultValues = {
   invoiceNumber: "",
   value: "",
   fgsStatus: "",
-  territoryStatus: "",
+  financeStatus: "",
 };
 
 const invoiceStatus = [
@@ -82,7 +82,7 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
       invoiceNumber: values.invoiceNumber,
       value: values.value,
       fgsStatus: values.fgsStatus,
-      territoryStatus: values.territoryStatus,
+      financeStatus: values.financeStatus,
     };
 
     if (initialValues) {
@@ -92,18 +92,21 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
 
   const enableFGStatusEdit = (): boolean => {
     const fgsStatus = watch("fgsStatus");
+    const financeStatus = watch("financeStatus");
+
     return (
       user?.roles?.includes(ERole.ROLE_FINISH_GOOD) &&
-      fgsStatus != EStatus.COMPLETED
+      !(fgsStatus == EStatus.COMPLETED && financeStatus == EStatus.COMPLETED)
     );
   };
 
   const enableTerritoryStatusEdit = (): boolean => {
-    const territoryStatus = watch("territoryStatus");
+    const fgsStatus = watch("fgsStatus");
+    const financeStatus = watch("financeStatus");
 
     return (
       user?.roles?.includes(ERole.ROLE_FINANCE) &&
-      territoryStatus != EStatus.COMPLETED
+      !(fgsStatus == EStatus.COMPLETED && financeStatus == EStatus.COMPLETED)
     );
   };
 
@@ -124,7 +127,7 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
   const showRequestEditFinanceStatusButton = (): boolean => {
     return (
       user?.roles?.includes(ERole.ROLE_FINANCE_HEAD) &&
-      initialValues?.territoryStatus == EStatus.COMPLETED
+      initialValues?.financeStatus == EStatus.COMPLETED
     );
   };
 
@@ -154,7 +157,7 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
         <div className="space-y-6">
           <div>
             <Label>
-              First Name <span className="text-error-500">*</span>{" "}
+              Inovice Number <span className="text-error-500">*</span>{" "}
             </Label>
             <Input
               disabled
@@ -165,7 +168,7 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
           </div>
           <div>
             <Label>
-              Last Name <span className="text-error-500">*</span>{" "}
+              Value <span className="text-error-500">*</span>{" "}
             </Label>
             <Input
               disabled
@@ -204,7 +207,7 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
               Finance(Status) <span className="text-error-500">*</span>
             </Label>
             <Controller
-              name="territoryStatus"
+              name="financeStatus"
               control={control}
               rules={{ required: "Role is required" }}
               render={({ field }) => (
@@ -218,9 +221,9 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
                 />
               )}
             />
-            {errors.territoryStatus && (
+            {errors.financeStatus && (
               <p className="text-error-500 text-sm mt-1">
-                {errors.territoryStatus.message}
+                {errors.financeStatus.message}
               </p>
             )}
           </div>

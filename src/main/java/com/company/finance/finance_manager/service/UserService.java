@@ -1,6 +1,7 @@
 package com.company.finance.finance_manager.service;
 
 import com.company.finance.finance_manager.dto.UserDTO;
+import com.company.finance.finance_manager.entity.ERole;
 import com.company.finance.finance_manager.entity.Role;
 import com.company.finance.finance_manager.entity.User;
 import com.company.finance.finance_manager.exception.BadRequestException;
@@ -8,11 +9,12 @@ import com.company.finance.finance_manager.exception.ResourceNotFoundException;
 import com.company.finance.finance_manager.repository.RoleRepository;
 import com.company.finance.finance_manager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -27,8 +29,40 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public void initRole() {
+
+        if (!roleRepository.existsByName(ERole.ROLE_ADMIN)) {
+            Role adminRole = new Role();
+            adminRole.setName(ERole.ROLE_ADMIN);
+            roleRepository.save(adminRole);
+        }
+
+        if (!roleRepository.existsByName(ERole.ROLE_FINISH_GOOD)) {
+            Role fgRole = new Role();
+            fgRole.setName(ERole.ROLE_FINISH_GOOD);
+            roleRepository.save(fgRole);
+        }
+        if (!roleRepository.existsByName(ERole.ROLE_FINISH_GOOD_HEAD)) {
+            Role fgHeadRole = new Role();
+            fgHeadRole.setName(ERole.ROLE_FINISH_GOOD_HEAD);
+            roleRepository.save(fgHeadRole);
+        }
+
+        if (!roleRepository.existsByName(ERole.ROLE_FINANCE)) {
+            Role financeRole = new Role();
+            financeRole.setName(ERole.ROLE_FINANCE);
+            roleRepository.save(financeRole);
+        }
+
+        if (!roleRepository.existsByName(ERole.ROLE_FINANCE_HEAD)) {
+            Role financeHeadRole = new Role();
+            financeHeadRole.setName(ERole.ROLE_FINANCE_HEAD);
+            roleRepository.save(financeHeadRole);
+        }
+    }
+
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     public User getUserById(Integer id) {

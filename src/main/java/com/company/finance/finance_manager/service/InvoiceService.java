@@ -2,20 +2,25 @@ package com.company.finance.finance_manager.service;
 
 import com.company.finance.finance_manager.dto.InvoiceDTO;
 import com.company.finance.finance_manager.dto.UpdateInvoiceDTO;
-import com.company.finance.finance_manager.entity.ERequestType;
 import com.company.finance.finance_manager.entity.EStatus;
 import com.company.finance.finance_manager.entity.Invoice;
 import com.company.finance.finance_manager.exception.ResourceNotFoundException;
 import com.company.finance.finance_manager.repository.InvoiceRepository;
 import com.company.finance.finance_manager.repository.InvoiceStatusAuditRepository;
 import com.company.finance.finance_manager.repository.UserRepository;
+import com.company.finance.finance_manager.specification.InvoiceSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class InvoiceService {
@@ -32,8 +37,26 @@ public class InvoiceService {
     @Autowired
     private InvoiceStatusAuditRepository auditRepository;
 
-    public List<Invoice> getAllInvoices() {
-        return invoiceRepository.findAll();
+    private Map<String, String> parseSearchString(String search) {
+        return Arrays.stream(search.split(","))
+                .map(s -> s.split(":", 2))
+                .filter(pair -> pair.length == 2)
+                .collect(Collectors.toMap(pair -> pair[0].trim(), pair -> pair[1].trim()));
+    }
+
+    public Page<Invoice> getAllInvoices(Pageable pageable, String search, String startDateStr, String endDateStr) {
+        Map<String, String> filters = parseSearchString(search);
+
+        // Add date filters to the map (optional)
+        if (startDateStr != null) {
+            filters.put("start_date", startDateStr);
+        }
+        if (endDateStr != null) {
+            filters.put("end_date", endDateStr);
+        }
+
+        Specification<Invoice> spec = InvoiceSpecifications.withFilters(filters);
+        return invoiceRepository.findAll(spec, pageable);
     }
 
     public Invoice getInvoiceById(Integer id) {
@@ -48,7 +71,7 @@ public class InvoiceService {
         invoice.setInvoiceNumber(invoiceDTO.getInvoiceNumber());
         invoice.setValue(invoiceDTO.getValue());
         invoice.setFgsStatus(EStatus.PENDING);
-        invoice.setTerritoryStatus(EStatus.PENDING);
+        invoice.setFinanceStatus(EStatus.PENDING);
 
         return invoiceRepository.save(invoice);
     }
@@ -71,16 +94,16 @@ public class InvoiceService {
             invoice.setFgsStatus(updateInvoiceDTO.getFgsStatus());
         }
 
-        // Territory Status change
-        if (updateInvoiceDTO.getTerritoryStatus() != null && !Objects.equals(invoice.getTerritoryStatus(), updateInvoiceDTO.getTerritoryStatus())) {
+        // Finance Status change
+        if (updateInvoiceDTO.getFinanceStatus() != null && !Objects.equals(invoice.getFinanceStatus(), updateInvoiceDTO.getFinanceStatus())) {
             invoiceStatusAuditService.saveStatusAudit(
                     invoice.getInvoiceNumber(),
-                    "territoryStatus",
-                    String.valueOf(invoice.getTerritoryStatus()),
-                    String.valueOf(updateInvoiceDTO.getTerritoryStatus()),
+                    "financeStatus",
+                    String.valueOf(invoice.getFinanceStatus()),
+                    String.valueOf(updateInvoiceDTO.getFinanceStatus()),
                     currentUser);
 
-            invoice.setTerritoryStatus(updateInvoiceDTO.getTerritoryStatus());
+            invoice.setFinanceStatus(updateInvoiceDTO.getFinanceStatus());
         }
 
         return invoiceRepository.save(invoice);
