@@ -5,7 +5,17 @@ export interface Invoice {
   value: number;
   fgsStatus: EStatus;
   financeStatus: EStatus;
-  createdAt: string
+  createdAt: string;
+  territory: string;
+}
+
+export interface CreateInvoice {
+  companyName: string;
+  invoiceNumber: string;
+  value: number;
+  fgsStatus: EStatus;
+  financeStatus: EStatus;
+  createdAt: string;
 }
 
 export interface InvoiceStatusAudit {
@@ -58,14 +68,19 @@ export interface Request {
   status: EStatus;
 }
 
+export interface CreateRequest {
+  invoiceId: number;
+  requestType: ERequestType;
+}
+
 export interface CreateRequestInput {
   invoiceId: number;
   requestType: string;
 }
 
 export enum SortOrder {
-  Asc = 'asc',
-  Desc = 'desc',
+  Asc = "asc",
+  Desc = "desc",
 }
 
 export interface QueryOptions {
@@ -110,9 +125,12 @@ export interface MappedPaginatorInfo {
 
 export interface InvoicePaginator extends PaginatorInfo<Invoice> {}
 
+export interface RequestPaginator extends PaginatorInfo<Request> {}
+
 export interface UserPaginator extends PaginatorInfo<User> {}
 
-export interface InvoiceStatusAuditPaginator extends PaginatorInfo<InvoiceStatusAudit> {}
+export interface InvoiceStatusAuditPaginator
+  extends PaginatorInfo<InvoiceStatusAudit> {}
 
 export interface InvoiceQueryOptions extends QueryOptions {
   companyName: string;
@@ -121,6 +139,8 @@ export interface InvoiceQueryOptions extends QueryOptions {
   start_date: string;
   end_date: string;
 }
+
+export interface RequestQueryOptions extends QueryOptions {}
 
 export interface UserQueryOptions extends QueryOptions {
   username: string;
@@ -142,4 +162,5 @@ export interface QueryOptions {
   page?: number;
   orderBy?: string;
   sortedBy?: SortOrder;
+  size?: number;
 }

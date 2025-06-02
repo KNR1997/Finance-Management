@@ -1,8 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { InvoicePaginator, InvoiceQueryOptions } from "../types";
 import { API_ENDPOINTS } from "./client/api-endpoints";
 import { mapPaginatorData } from "../utils/data-mappers";
 import { InvoiceClient } from "./client/invoice";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
 
 // export const useInvoicesQuery = (options: Partial<InvoiceQueryOptions>) => {
 //   const { data, isLoading, isError, error } = useQuery({
@@ -40,4 +42,39 @@ export const useInvoicesQuery = (
     error,
     loading: isLoading,
   };
+};
+
+export const useCreateInvoiceMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation(InvoiceClient.create, {
+    onSuccess: async () => {
+      toast.success("Successfully created!");
+    },
+    // Always refetch after error or success:
+    onSettled: () => {
+      queryClient.invalidateQueries(API_ENDPOINTS.INVOICES);
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message);
+    },
+  });
+};
+
+export const useUpdateInvoiceMutation = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  return useMutation(InvoiceClient.update, {
+    onSuccess: async () => {
+      navigate("/invoices");
+      toast.success("Successfully updated!");
+    },
+    // Always refetch after error or success:
+    onSettled: () => {
+      queryClient.invalidateQueries(API_ENDPOINTS.INVOICES);
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message);
+    },
+  });
 };

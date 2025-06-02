@@ -44,10 +44,22 @@ public class InvoiceService {
                 .collect(Collectors.toMap(pair -> pair[0].trim(), pair -> pair[1].trim()));
     }
 
-    public Page<Invoice> getAllInvoices(Pageable pageable, String search, String startDateStr, String endDateStr) {
+    public Page<Invoice> getAllInvoices(Pageable pageable,
+                                        String search,
+                                        String fgsStatus,
+                                        String financeStatus,
+                                        String startDateStr,
+                                        String endDateStr
+    ) {
         Map<String, String> filters = parseSearchString(search);
 
         // Add date filters to the map (optional)
+        if (fgsStatus != null) {
+            filters.put("fgsStatus", fgsStatus);
+        }
+        if (financeStatus != null) {
+            filters.put("financeStatus", financeStatus);
+        }
         if (startDateStr != null) {
             filters.put("start_date", startDateStr);
         }
@@ -106,6 +118,7 @@ public class InvoiceService {
             invoice.setFinanceStatus(updateInvoiceDTO.getFinanceStatus());
         }
 
+        invoice.setRemarks(updateInvoiceDTO.getRemarks());
         return invoiceRepository.save(invoice);
     }
 

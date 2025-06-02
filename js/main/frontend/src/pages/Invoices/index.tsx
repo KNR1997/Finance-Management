@@ -25,9 +25,10 @@ export default function Invoices() {
   const [endDate, setEndDate] = useState<Date | null>(null);
 
   const { invoices, loading, error, paginatorInfo } = useInvoicesQuery({
+    size: 15,
     companyName: searchTerm,
-    fgsStatus: fgsStatus,
-    financeStatus: financeStatus,
+    fgsStatus: fgsStatus ? fgsStatus : undefined,
+    financeStatus: financeStatus ? financeStatus : undefined,
     start_date: startDate ? startDate.toISOString() : undefined,
     end_date: endDate ? endDate.toISOString() : undefined,
     page,

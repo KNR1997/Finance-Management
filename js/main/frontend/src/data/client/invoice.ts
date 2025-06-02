@@ -11,19 +11,16 @@ import { HttpClient } from "./http-client";
 export const InvoiceClient = {
   ...crudFactory<Invoice, QueryOptions, Invoice>(API_ENDPOINTS.INVOICES),
   paginated: ({
-    fgsStatus,
-    financeStatus,
     companyName,
     ...params
   }: Partial<InvoiceQueryOptions>) => {
+    console.log('params: ', params)
     return HttpClient.get<InvoicePaginator>(API_ENDPOINTS.INVOICES, {
       searchJoin: "and",
       // self,
       ...params,
       page: params?.page ? params.page - 1 : 0,
       search: HttpClient.formatSearchParams({
-        fgsStatus,
-        financeStatus,
         companyName,
       }),
     });

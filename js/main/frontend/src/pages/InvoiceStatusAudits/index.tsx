@@ -14,6 +14,7 @@ export default function InvoiceStatusAudits() {
 
   const { invoiceStatusAudits, loading, error, paginatorInfo } =
     useInvoiceStatusAuditsQuery({
+      size: 15,
       page,
       orderBy,
       sortedBy,

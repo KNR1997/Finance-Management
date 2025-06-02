@@ -6,6 +6,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @Entity
 public class Invoice extends TimeAuditModel {
@@ -16,12 +18,18 @@ public class Invoice extends TimeAuditModel {
 
     private String companyName;
 
-    private String invoiceNumber;
+    private String invoiceNumber; // Todo -> DocNumber
 
-    private Double value;
+    private Double value; // Todo -> DocTotal
 
     private EStatus fgsStatus;
 
     private EStatus financeStatus;
+
+    private String territory;  // Todo -> CardCode
+
+    private String remarks;
+
+//    private LocalDateTime DocDate;
 
 }
