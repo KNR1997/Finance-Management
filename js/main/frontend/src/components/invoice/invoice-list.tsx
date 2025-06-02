@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { Invoice, EStatus, MappedPaginatorInfo } from "../../types";
+import { Invoice, EStatus, MappedPaginatorInfo, ERole } from "../../types";
 import Badge from "../ui/badge/Badge";
 import {
   Table,
@@ -11,6 +11,17 @@ import {
 import { PencilIcon } from "../../icons";
 import Pagination from "../ui/pagination";
 import "rc-pagination/assets/index.css";
+import { useModal } from "../../hooks/useModal";
+import { Modal } from "../ui/modal";
+import Button from "../ui/button/Button";
+import SelectInput from "../form/select-input";
+import { Controller, useForm } from "react-hook-form";
+import { Input } from "antd";
+import { useAuth } from "../../context/AuthContext";
+import Label from "../form/Label";
+import { useState } from "react";
+import Loader from "../ui/loader/loader";
+import { useUpdateInvoiceMutation } from "../../data/invoice";
 
 export type IProps = {
   invoices: Invoice[];
@@ -20,15 +31,69 @@ export type IProps = {
   onOrder: (current: string) => void;
 };
 
+type FormValues = {
+  invoiceId: number;
+  invoiceNumber: string;
+  value: number;
+  fgsStatus: EStatus;
+  financeStatus: EStatus;
+};
+
 export default function InvoiceList({
   invoices,
   onPagination,
   paginatorInfo,
 }: IProps) {
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const { isOpen, openModal, closeModal } = useModal();
+  const [modalType, setModalType] = useState<"FG" | "FINANCE" | null>(null);
+  const { control, handleSubmit, register, setValue } = useForm<FormValues>();
+
+  const { mutate: updateInvoice, isLoading } = useUpdateInvoiceMutation();
+
+  if (isLoading) return <Loader text="Loading..." />;
 
   const handleEdit = (id: number) => {
     navigate(`/invoices/${id}/edit`);
+  };
+
+  const handleStatusClick = (
+    invoice: Invoice,
+    requiredRole: ERole,
+    type: "FG" | "FINANCE"
+  ) => {
+    if (
+      user?.roles?.includes(requiredRole) &&
+      !(
+        invoice.fgsStatus === EStatus.COMPLETED &&
+        invoice.financeStatus === EStatus.COMPLETED
+      )
+    ) {
+      setValue("invoiceId", invoice.id);
+      setValue("invoiceNumber", invoice.invoiceNumber);
+      setValue("value", invoice.value);
+      setValue("fgsStatus", invoice.fgsStatus);
+      setValue("financeStatus", invoice.financeStatus);
+      setModalType(type);
+      openModal();
+    }
+  };
+
+  const invoiceStatus = [
+    { label: "Pending", value: EStatus.PENDING },
+    { label: "Completed", value: EStatus.COMPLETED },
+  ];
+
+  const onSubmit = async (values: FormValues) => {
+    const input = {
+      invoiceNumber: values.invoiceNumber,
+      value: values.value,
+      fgsStatus: values.fgsStatus,
+      financeStatus: values.financeStatus,
+    };
+    updateInvoice({ ...input, id: values.invoiceId });
+    closeModal();
   };
 
   return (
@@ -60,6 +125,24 @@ export default function InvoiceList({
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
+                Value
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                Territory
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                CreatedAt
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
                 FGS(Status)
               </TableCell>
               <TableCell
@@ -67,18 +150,6 @@ export default function InvoiceList({
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
                 Finance(Status)
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Value
-              </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                CreatedAt
               </TableCell>
               <TableCell
                 isHeader
@@ -103,38 +174,53 @@ export default function InvoiceList({
                   {invoice.invoiceNumber}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  <Badge
-                    size="sm"
-                    color={
-                      invoice.fgsStatus === EStatus.COMPLETED
-                        ? "success"
-                        : invoice.fgsStatus === EStatus.PENDING
-                        ? "warning"
-                        : "error"
-                    }
-                  >
-                    {invoice.fgsStatus}
-                  </Badge>
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  <Badge
-                    size="sm"
-                    color={
-                      invoice.financeStatus === EStatus.COMPLETED
-                        ? "success"
-                        : invoice.financeStatus === EStatus.PENDING
-                        ? "warning"
-                        : "error"
-                    }
-                  >
-                    {invoice.financeStatus}
-                  </Badge>
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {invoice.value}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  {invoice?.territory ? invoice.territory : '_'}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {new Date(invoice.createdAt).toLocaleString()}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  <button
+                    onClick={() =>
+                      handleStatusClick(invoice, ERole.ROLE_FINISH_GOOD, "FG")
+                    }
+                  >
+                    <Badge
+                      size="sm"
+                      color={
+                        invoice.fgsStatus === EStatus.COMPLETED
+                          ? "success"
+                          : invoice.fgsStatus === EStatus.PENDING
+                          ? "warning"
+                          : "error"
+                      }
+                    >
+                      {invoice.fgsStatus}
+                    </Badge>
+                  </button>
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  <button
+                    onClick={() =>
+                      handleStatusClick(invoice, ERole.ROLE_FINANCE, "FINANCE")
+                    }
+                  >
+                    <Badge
+                      size="sm"
+                      color={
+                        invoice.financeStatus === EStatus.COMPLETED
+                          ? "success"
+                          : invoice.financeStatus === EStatus.PENDING
+                          ? "warning"
+                          : "error"
+                      }
+                    >
+                      {invoice.financeStatus}
+                    </Badge>
+                  </button>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <button onClick={() => handleEdit(invoice.id)}>
@@ -156,6 +242,85 @@ export default function InvoiceList({
           </div>
         )}
       </div>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          closeModal();
+          setModalType(null);
+        }}
+        className="max-w-[700px] m-4"
+      >
+        <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
+          <div className="px-2 pr-14">
+            <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+              {`Edit ${modalType === "FG" ? "FGS" : "Finance"} Status`}
+            </h4>
+            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+              Update your details to keep your profile up-to-date.
+            </p>
+          </div>
+          <form className="flex flex-col">
+            <div className="px-2 overflow-y-auto custom-scrollbar">
+              <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                <Input hidden {...register("invoiceId")} />
+                {modalType === "FG" && (
+                  <div>
+                    <Label>
+                      FG(Status) <span className="text-error-500">*</span>
+                    </Label>
+                    <Controller
+                      name="fgsStatus"
+                      control={control}
+                      rules={{ required: "Role is required" }}
+                      render={({ field }) => (
+                        <SelectInput
+                          disabled={false}
+                          options={invoiceStatus}
+                          placeholder="Select Option"
+                          value={field.value}
+                          onChange={field.onChange}
+                          className="dark:bg-dark-900"
+                        />
+                      )}
+                    />
+                  </div>
+                )}
+
+                {modalType === "FINANCE" && (
+                  <div>
+                    <Label>
+                      Finance(Status) <span className="text-error-500">*</span>
+                    </Label>
+                    <Controller
+                      name="financeStatus"
+                      control={control}
+                      rules={{ required: "Role is required" }}
+                      render={({ field }) => (
+                        <SelectInput
+                          disabled={false}
+                          options={invoiceStatus}
+                          placeholder="Select Option"
+                          value={field.value}
+                          onChange={field.onChange}
+                          className="dark:bg-dark-900"
+                        />
+                      )}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
+              <Button size="sm" variant="outline" onClick={closeModal}>
+                Close
+              </Button>
+              <Button size="sm" onClick={handleSubmit(onSubmit)}>
+                Save Changes
+              </Button>
+            </div>
+          </form>
+        </div>
+      </Modal>
     </div>
   );
 }

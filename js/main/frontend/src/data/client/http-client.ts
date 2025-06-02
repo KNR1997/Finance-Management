@@ -77,8 +77,8 @@ interface SearchParamOptions {
   product_type: string;
   is_read: boolean;
   order_status: string;
-  fgsStatus: string;
-  financeStatus: string;
+  // fgsStatus: string;
+  // financeStatus: string;
   companyName: string;
   username: string;
 }

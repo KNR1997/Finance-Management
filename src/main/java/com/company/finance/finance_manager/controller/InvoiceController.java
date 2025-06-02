@@ -29,13 +29,15 @@ public class InvoiceController {
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "desc") String direction,
             @RequestParam(required = false) String search,
+            @RequestParam(required = false) String fgsStatus,
+            @RequestParam(required = false) String financeStatus,
             @RequestParam(required = false) String start_date,
             @RequestParam(required = false) String end_date
     ) {
         Sort sortOrder = Sort.by(Sort.Direction.fromString(direction), sort);
         Pageable pageable = PageRequest.of(page, size, sortOrder);
 
-        Page<Invoice> invoicePage = invoiceService.getAllInvoices(pageable, search, start_date, end_date);
+        Page<Invoice> invoicePage = invoiceService.getAllInvoices(pageable, search, fgsStatus, financeStatus, start_date, end_date);
 
         PaginatedResponse<Invoice> response = new PaginatedResponse<>(invoicePage);
         return ResponseEntity.ok(response);

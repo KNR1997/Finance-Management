@@ -2,20 +2,18 @@ import { Controller, useForm } from "react-hook-form";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import Button from "../ui/button/Button";
-import { useNavigate } from "react-router";
 import { ERole, Invoice, EStatus, ERequestType } from "../../types";
 import SelectInput from "../form/select-input";
 import { useAuth } from "../../context/AuthContext";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
-import { updateInvoice } from "../../services/invoiceService";
-import { createRequest } from "../../services/requestService";
+import { useCreateRequestMutation } from "../../data/request";
+import { useUpdateInvoiceMutation } from "../../data/invoice";
 
 type FormValues = {
   invoiceNumber: string;
-  value: string;
-  fgsStatus: string;
-  financeStatus: string;
+  value: number;
+  fgsStatus: EStatus;
+  financeStatus: EStatus;
+  remarks: string;
 };
 
 const defaultValues = {
@@ -36,7 +34,11 @@ interface Props {
 
 export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
   const { user } = useAuth();
-  const navigate = useNavigate();
+
+  const { mutate: createRequest, isLoading: creating } =
+    useCreateRequestMutation();
+  const { mutate: updateInvoice, isLoading: updating } =
+    useUpdateInvoiceMutation();
 
   const {
     control,
@@ -55,27 +57,27 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
     // resolver: yupResolver(validationSchema),
   });
 
-  const updateMutation = useMutation({
-    mutationFn: updateInvoice,
-    onSuccess: () => {
-      navigate("/invoices");
-      toast.success("Successfully updated!");
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message);
-    },
-  });
+  // const updateMutation = useMutation({
+  //   mutationFn: updateInvoice,
+  //   onSuccess: () => {
+  //     navigate("/invoices");
+  //     toast.success("Successfully updated!");
+  //   },
+  //   onError: (error: any) => {
+  //     toast.error(error?.response?.data?.message);
+  //   },
+  // });
 
-  const createMutation = useMutation({
-    mutationFn: createRequest,
-    onSuccess: () => {
-      navigate("/requests");
-      toast.success("Successfully created!");
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message);
-    },
-  });
+  // const createMutation = useMutation({
+  //   mutationFn: createRequest,
+  //   onSuccess: () => {
+  //     navigate("/requests");
+  //     toast.success("Successfully created!");
+  //   },
+  //   onError: (error: any) => {
+  //     toast.error(error?.response?.data?.message);
+  //   },
+  // });
 
   const onSubmit = async (values: FormValues) => {
     const input = {
@@ -83,10 +85,11 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
       value: values.value,
       fgsStatus: values.fgsStatus,
       financeStatus: values.financeStatus,
+      remarks: values.remarks,
     };
 
     if (initialValues) {
-      updateMutation.mutate({ id: initialValues.id, input });
+      updateInvoice({ ...input, id: initialValues.id });
     }
   };
 
@@ -100,7 +103,7 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
     );
   };
 
-  const enableTerritoryStatusEdit = (): boolean => {
+  const enableFinanceStatusEdit = (): boolean => {
     const fgsStatus = watch("fgsStatus");
     const financeStatus = watch("financeStatus");
 
@@ -137,7 +140,7 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
         invoiceId: initialValues?.id,
         requestType: ERequestType.FG_REQUEST,
       };
-      createMutation.mutate(input);
+      createRequest(input);
     }
   };
 
@@ -147,7 +150,7 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
         invoiceId: initialValues?.id,
         requestType: ERequestType.FINANCE_REQUEST,
       };
-      createMutation.mutate(input);
+      createRequest(input);
     }
   };
 
@@ -212,7 +215,7 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
               rules={{ required: "Role is required" }}
               render={({ field }) => (
                 <SelectInput
-                  disabled={!enableTerritoryStatusEdit()}
+                  disabled={!enableFinanceStatusEdit()}
                   options={invoiceStatus}
                   placeholder="Select Option"
                   value={field.value}
@@ -226,6 +229,14 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
                 {errors.financeStatus.message}
               </p>
             )}
+          </div>
+          <div>
+            <Label>Remarks</Label>
+            <Input
+              // placeholder="Inovice Number"
+              {...register("remarks")}
+              errorMessage={errors.remarks?.message!}
+            />
           </div>
           {showEditButton() && (
             <Button size="sm">
@@ -246,6 +257,8 @@ export default function CreateOrUpdateInvoiceForm({ initialValues }: Props) {
 
       {showRequestEditFinanceStatusButton() && (
         <Button
+          // loading={creating || updating}
+          disabled={creating || updating}
           className="mt-5"
           size="sm"
           onClick={() => handleRequestEditFinanceStatus()}

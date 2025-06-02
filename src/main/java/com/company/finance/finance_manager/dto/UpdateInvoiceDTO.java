@@ -8,4 +8,6 @@ public class UpdateInvoiceDTO {
     private EStatus fgsStatus;
 
     private EStatus financeStatus;
+
+    private String remarks;
 }
