@@ -14,7 +14,6 @@ export const InvoiceClient = {
     companyName,
     ...params
   }: Partial<InvoiceQueryOptions>) => {
-    console.log('params: ', params)
     return HttpClient.get<InvoicePaginator>(API_ENDPOINTS.INVOICES, {
       searchJoin: "and",
       // self,

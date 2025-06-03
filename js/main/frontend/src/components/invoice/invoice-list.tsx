@@ -11,16 +11,7 @@ import {
 import { PencilIcon } from "../../icons";
 import Pagination from "../ui/pagination";
 import "rc-pagination/assets/index.css";
-import { useModal } from "../../hooks/useModal";
-import { Modal } from "../ui/modal";
-import Button from "../ui/button/Button";
-import SelectInput from "../form/select-input";
-import { Controller, useForm } from "react-hook-form";
-import { Input } from "antd";
 import { useAuth } from "../../context/AuthContext";
-import Label from "../form/Label";
-import { useState } from "react";
-import Loader from "../ui/loader/loader";
 import { useUpdateInvoiceMutation } from "../../data/invoice";
 
 export type IProps = {
@@ -31,13 +22,13 @@ export type IProps = {
   onOrder: (current: string) => void;
 };
 
-type FormValues = {
-  invoiceId: number;
-  invoiceNumber: string;
-  value: number;
-  fgsStatus: EStatus;
-  financeStatus: EStatus;
-};
+// type FormValues = {
+//   invoiceId: number;
+//   invoiceNumber: string;
+//   value: number;
+//   fgsStatus: EStatus;
+//   financeStatus: EStatus;
+// };
 
 export default function InvoiceList({
   invoices,
@@ -46,13 +37,11 @@ export default function InvoiceList({
 }: IProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { isOpen, openModal, closeModal } = useModal();
-  const [modalType, setModalType] = useState<"FG" | "FINANCE" | null>(null);
-  const { control, handleSubmit, register, setValue } = useForm<FormValues>();
+  // const { isOpen, openModal, closeModal } = useModal();
+  // const [modalType, setModalType] = useState<"FG" | "FINANCE" | null>(null);
+  // const { control, handleSubmit, register, setValue } = useForm<FormValues>();
 
-  const { mutate: updateInvoice, isLoading } = useUpdateInvoiceMutation();
-
-  if (isLoading) return <Loader text="Loading..." />;
+  const { mutate: updateInvoice } = useUpdateInvoiceMutation();
 
   const handleEdit = (id: number) => {
     navigate(`/invoices/${id}/edit`);
@@ -63,38 +52,56 @@ export default function InvoiceList({
     requiredRole: ERole,
     type: "FG" | "FINANCE"
   ) => {
-    if (
-      user?.roles?.includes(requiredRole) &&
-      !(
-        invoice.fgsStatus === EStatus.COMPLETED &&
-        invoice.financeStatus === EStatus.COMPLETED
-      )
-    ) {
-      setValue("invoiceId", invoice.id);
-      setValue("invoiceNumber", invoice.invoiceNumber);
-      setValue("value", invoice.value);
-      setValue("fgsStatus", invoice.fgsStatus);
-      setValue("financeStatus", invoice.financeStatus);
-      setModalType(type);
-      openModal();
-    }
-  };
+    const hasPermission = user?.roles?.includes(requiredRole);
+    const isFullyCompleted =
+      invoice.fgsStatus === EStatus.COMPLETED &&
+      invoice.financeStatus === EStatus.COMPLETED;
 
-  const invoiceStatus = [
-    { label: "Pending", value: EStatus.PENDING },
-    { label: "Completed", value: EStatus.COMPLETED },
-  ];
+    if (!hasPermission || isFullyCompleted) return;
 
-  const onSubmit = async (values: FormValues) => {
+    const updatedStatus =
+      type === "FG"
+        ? invoice.fgsStatus === EStatus.COMPLETED
+          ? EStatus.PENDING
+          : EStatus.COMPLETED
+        : invoice.financeStatus === EStatus.COMPLETED
+        ? EStatus.PENDING
+        : EStatus.COMPLETED;
+
     const input = {
-      invoiceNumber: values.invoiceNumber,
-      value: values.value,
-      fgsStatus: values.fgsStatus,
-      financeStatus: values.financeStatus,
+      invoiceNumber: invoice.invoiceNumber,
+      value: invoice.value,
+      fgsStatus: type === "FG" ? updatedStatus : invoice.fgsStatus,
+      financeStatus: type === "FINANCE" ? updatedStatus : invoice.financeStatus,
     };
-    updateInvoice({ ...input, id: values.invoiceId });
-    closeModal();
+
+    updateInvoice({ ...input, id: invoice.id });
+
+    // Optional: if you decide to re-enable the modal code
+    // setValue("invoiceId", invoice.id);
+    // setValue("invoiceNumber", invoice.invoiceNumber);
+    // setValue("value", invoice.value);
+    // setValue("fgsStatus", input.fgsStatus);
+    // setValue("financeStatus", input.financeStatus);
+    // setModalType(type);
+    // openModal();
   };
+
+  // const invoiceStatus = [
+  //   { label: "Pending", value: EStatus.PENDING },
+  //   { label: "Completed", value: EStatus.COMPLETED },
+  // ];
+
+  // const onSubmit = async (values: FormValues) => {
+  //   const input = {
+  //     invoiceNumber: values.invoiceNumber,
+  //     value: values.value,
+  //     fgsStatus: values.fgsStatus,
+  //     financeStatus: values.financeStatus,
+  //   };
+  //   updateInvoice({ ...input, id: values.invoiceId });
+  //   closeModal();
+  // };
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -177,7 +184,7 @@ export default function InvoiceList({
                   {invoice.value}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {invoice?.territory ? invoice.territory : '_'}
+                  {invoice?.territory ? invoice.territory : "_"}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {new Date(invoice.createdAt).toLocaleString()}
@@ -242,7 +249,7 @@ export default function InvoiceList({
           </div>
         )}
       </div>
-      <Modal
+      {/* <Modal
         isOpen={isOpen}
         onClose={() => {
           closeModal();
@@ -320,7 +327,7 @@ export default function InvoiceList({
             </div>
           </form>
         </div>
-      </Modal>
+      </Modal> */}
     </div>
   );
 }

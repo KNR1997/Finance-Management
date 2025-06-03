@@ -10,6 +10,8 @@ import com.company.finance.finance_manager.repository.InvoiceRepository;
 import com.company.finance.finance_manager.repository.RequestRepository;
 import com.company.finance.finance_manager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,11 +34,13 @@ public class RequestService {
     @Autowired
     private InvoiceStatusAuditService invoiceStatusAuditService;
 
-    public List<RequestPaginatedDTO> getAllRequests() {
-        List<Request> requests = requestRepository.findAll();
-        return requests.stream()
-                .map(RequestPaginatedDTO::new) // Use your constructor reference here
-                .collect(Collectors.toList());
+    public Page<Request> getAllRequests(Pageable pageable) {
+        return requestRepository.findAll(pageable);
+    }
+
+    public Page<RequestPaginatedDTO> getAllRequestsPaginated(Pageable pageable) {
+        Page<Request> requests = requestRepository.findAll(pageable);
+        return requests.map(RequestPaginatedDTO::new);
     }
 
     public RequestPagedDataDTO getRequestById(Integer id) {

@@ -58,7 +58,6 @@ export default function CreateOrUpdateRequestForm({ initialValues }: Props) {
   });
 
   const onSubmit = async (values: FormValues) => {
-    console.log("onsubmit executed");
     const input = {
       id: initialValues?.id,
       invoiceId: initialValues?.invoiceId,
@@ -126,7 +125,7 @@ export default function CreateOrUpdateRequestForm({ initialValues }: Props) {
           </div>
         </div>
       </form>
-      <div className="flex gap-5">
+      <div className="flex gap-5 mt-2">
         <Button size="sm" onClick={handleAccept}>
           Accept
         </Button>

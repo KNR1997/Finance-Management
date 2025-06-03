@@ -1,5 +1,11 @@
 import { useNavigate } from "react-router";
-import { ERequestType, ERole, EStatus, Request } from "../../types";
+import {
+  ERequestType,
+  ERole,
+  EStatus,
+  MappedPaginatorInfo,
+  Request,
+} from "../../types";
 import Badge from "../ui/badge/Badge";
 import {
   Table,
@@ -10,15 +16,20 @@ import {
 } from "../ui/table";
 import { LockIcon, PencilIcon } from "../../icons";
 import { useAuth } from "../../context/AuthContext";
+import Pagination from "../ui/pagination";
 
 export type IProps = {
   requests: Request[];
-  // paginatorInfo: MappedPaginatorInfo | null;
-  // onPagination: (key: number) => void;
-  // onSort: (current: any) => void;
-  // onOrder: (current: string) => void;
+  paginatorInfo: MappedPaginatorInfo | null;
+  onPagination: (key: number) => void;
+  onSort: (current: any) => void;
+  onOrder: (current: string) => void;
 };
-export default function RequestList({ requests }: IProps) {
+export default function RequestList({
+  requests,
+  onPagination,
+  paginatorInfo,
+}: IProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -145,6 +156,16 @@ export default function RequestList({ requests }: IProps) {
             ))}
           </TableBody>
         </Table>
+        {!!paginatorInfo?.total && (
+          <div className="flex items-center justify-end pb-2">
+            <Pagination
+              total={paginatorInfo.total}
+              current={paginatorInfo.currentPage}
+              pageSize={paginatorInfo.perPage}
+              onChange={onPagination}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
