@@ -1,17 +1,17 @@
 package com.company.finance.finance_manager.controller;
 
-import com.company.finance.finance_manager.dto.RequestDTO;
-import com.company.finance.finance_manager.dto.RequestPagedDataDTO;
-import com.company.finance.finance_manager.dto.RequestPaginatedDTO;
-import com.company.finance.finance_manager.dto.RequestUpdateDTO;
+import com.company.finance.finance_manager.dto.*;
 import com.company.finance.finance_manager.entity.Request;
 import com.company.finance.finance_manager.service.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/requests")
@@ -21,10 +21,19 @@ public class RequestController {
     private RequestService requestService;
 
     @GetMapping
-    public ResponseEntity<List<RequestPaginatedDTO>> getAllRequests() {
-        List<RequestPaginatedDTO> requestList = requestService.getAllRequests();
+    public ResponseEntity<PaginatedResponse<RequestPaginatedDTO>> getAllRequests(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "desc") String direction
+    ) {
+        Sort sortOrder = Sort.by(Sort.Direction.fromString(direction), sort);
+        Pageable pageable = PageRequest.of(page, size, sortOrder);
 
-        return ResponseEntity.ok(requestList);
+        Page<RequestPaginatedDTO> requestPage = requestService.getAllRequestsPaginated(pageable);
+
+        PaginatedResponse<RequestPaginatedDTO> response = new PaginatedResponse<>(requestPage);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

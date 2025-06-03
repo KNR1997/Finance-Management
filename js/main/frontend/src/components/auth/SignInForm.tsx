@@ -38,7 +38,6 @@ export default function SignInForm() {
   });
 
   const onSubmit = async (values: FormValues) => {
-    console.log('hereeeee')
     try {
       const data = {
         username: values.username,

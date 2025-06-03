@@ -5,7 +5,6 @@ interface BreadcrumbProps {
 }
 
 const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle }) => {
-  console.log('inside PageBreadcrumb------------------')
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
       <h2

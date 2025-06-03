@@ -6,22 +6,6 @@ import { InvoiceClient } from "./client/invoice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
 
-// export const useInvoicesQuery = (options: Partial<InvoiceQueryOptions>) => {
-//   const { data, isLoading, isError, error } = useQuery({
-//     queryKey: [API_ENDPOINTS.INVOICES, options],
-//     queryFn: () => fetchInvoices(options),
-//     // keepPreviousData: true, // keeps previous data while fetching new
-//   });
-
-//   return {
-//     invoices: data?.content ?? [],
-//     paginatorInfo: mapPaginatorData(data),
-//     isError: isError,
-//     error,
-//     loading: isLoading,
-//   };
-// };
-
 export const useInvoicesQuery = (
   params: Partial<InvoiceQueryOptions>,
   options: any = {}

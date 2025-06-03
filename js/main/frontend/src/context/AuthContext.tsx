@@ -12,13 +12,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      // console.log('useEffecttttttttttttt')
       if (token) {
         try {
           const res = await axios.get("/api/auth/me", {
             headers: { Authorization: `Bearer ${token}` },
           });
-          // console.log('setting userrrrrrrrrr: ', res.data)
           setUser(res.data);
         } catch (err) {
           console.error("Invalid token");

@@ -1,33 +1,32 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { InvoicePaginator, InvoiceQueryOptions } from "../types";
+import { RequestPaginator, RequestQueryOptions } from "../types";
 import { API_ENDPOINTS } from "./client/api-endpoints";
 import { mapPaginatorData } from "../utils/data-mappers";
-import { InvoiceClient } from "./client/invoice";
 import { toast } from "react-toastify";
 import { RequestClient } from "./client/request";
 import { useNavigate } from "react-router";
 
-// export const useInvoicesQuery = (
-//   params: Partial<InvoiceQueryOptions>,
-//   options: any = {}
-// ) => {
-//   const { data, error, isLoading } = useQuery<InvoicePaginator, Error>(
-//     [API_ENDPOINTS.INVOICES, params],
-//     ({ queryKey, pageParam }) =>
-//       InvoiceClient.paginated(Object.assign({}, queryKey[1], pageParam)),
-//     {
-//       keepPreviousData: true,
-//       ...options,
-//     }
-//   );
+export const useRequestsQuery = (
+  params: Partial<RequestQueryOptions>,
+  options: any = {}
+) => {
+  const { data, error, isLoading } = useQuery<RequestPaginator, Error>(
+    [API_ENDPOINTS.REQUESTS, params],
+    ({ queryKey, pageParam }) =>
+      RequestClient.paginated(Object.assign({}, queryKey[1], pageParam)),
+    {
+      keepPreviousData: true,
+      ...options,
+    }
+  );
 
-//   return {
-//     invoices: data?.content ?? [],
-//     paginatorInfo: mapPaginatorData(data),
-//     error,
-//     loading: isLoading,
-//   };
-// };
+  return {
+    requests: data?.content ?? [],
+    paginatorInfo: mapPaginatorData(data),
+    error,
+    loading: isLoading,
+  };
+};
 
 export const useCreateRequestMutation = () => {
   const navigate = useNavigate();

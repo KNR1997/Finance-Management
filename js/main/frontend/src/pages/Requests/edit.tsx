@@ -25,8 +25,6 @@ export default function EditRequestPage() {
     }
   }, [id]);
 
-  console.log('request: ', request)
-
   return (
     <>
       <PageBreadcrumb pageTitle="Edit Request" />
