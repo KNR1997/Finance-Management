@@ -2,15 +2,12 @@ import { useForm } from "react-hook-form";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import Button from "../ui/button/Button";
-import { useNavigate } from "react-router";
-import { Request } from "../../types";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
-import { updateRequest } from "../../services/requestService";
+import { ERequestType, Request } from "../../types";
+import { useUpdateRequestMutation } from "../../data/request";
 
 type FormValues = {
   invoiceNumber: string;
-  requestType: string;
+  requestType: ERequestType;
   response: EResponse;
 };
 
@@ -24,12 +21,12 @@ interface Props {
 }
 
 export default function CreateOrUpdateRequestForm({ initialValues }: Props) {
-  const navigate = useNavigate();
+  const { mutate: updateRequest, isLoading: updating } =
+    useUpdateRequestMutation();
 
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     // @ts-ignore
@@ -46,27 +43,15 @@ export default function CreateOrUpdateRequestForm({ initialValues }: Props) {
     // resolver: yupResolver(validationSchema),
   });
 
-  const updateMutation = useMutation({
-    mutationFn: updateRequest,
-    onSuccess: () => {
-      navigate("/requests");
-      toast.success("Successfully updated!");
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message);
-    },
-  });
-
   const onSubmit = async (values: FormValues) => {
     const input = {
-      id: initialValues?.id,
       invoiceId: initialValues?.invoiceId,
       requestType: values.requestType,
       response: values.response,
     };
 
     if (initialValues) {
-      updateMutation.mutate({ id: initialValues.id, input });
+      updateRequest({ id: initialValues.id, ...input });
     }
   };
 
@@ -75,13 +60,11 @@ export default function CreateOrUpdateRequestForm({ initialValues }: Props) {
 
     if (initialValues) {
       const input = {
-        id: initialValues.id,
-              requestType: initialValues.requestType,
-
+        requestType: initialValues.requestType,
         invoiceId: initialValues?.invoiceId,
         response: EResponse.Accept,
       };
-      updateMutation.mutate({ id: initialValues.id, input });
+      updateRequest({ id: initialValues.id, ...input });
     }
   };
 
@@ -90,14 +73,11 @@ export default function CreateOrUpdateRequestForm({ initialValues }: Props) {
 
     if (initialValues) {
       const input = {
-        id: initialValues.id,
-              requestType: initialValues.requestType,
-
+        requestType: initialValues.requestType,
         invoiceId: initialValues?.invoiceId,
-
         response: EResponse.Decline,
       };
-      updateMutation.mutate({ id: initialValues.id, input });
+      updateRequest({ id: initialValues.id, ...input });
     }
   };
 
@@ -126,10 +106,15 @@ export default function CreateOrUpdateRequestForm({ initialValues }: Props) {
         </div>
       </form>
       <div className="flex gap-5 mt-2">
-        <Button size="sm" onClick={handleAccept}>
+        <Button disabled={updating} size="sm" onClick={handleAccept}>
           Accept
         </Button>
-        <Button size="sm" className="bg-red-500" onClick={handleDecline}>
+        <Button
+          disabled={updating}
+          size="sm"
+          className="bg-red-500"
+          onClick={handleDecline}
+        >
           Decline
         </Button>
       </div>

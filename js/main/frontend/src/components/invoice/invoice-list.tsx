@@ -1,18 +1,18 @@
 import { useNavigate } from "react-router";
-import { Invoice, EStatus, MappedPaginatorInfo, ERole } from "../../types";
-import Badge from "../ui/badge/Badge";
+import { Invoice, EStatus, MappedPaginatorInfo, ERole } from "@types";
+import Badge from "@components/ui/badge/Badge";
 import {
   Table,
   TableBody,
   TableCell,
   TableHeader,
   TableRow,
-} from "../ui/table";
+} from "@components/ui/table";
 import { PencilIcon } from "../../icons";
-import Pagination from "../ui/pagination";
+import Pagination from "@components/ui/pagination";
 import "rc-pagination/assets/index.css";
 import { useAuth } from "../../context/AuthContext";
-import { useUpdateInvoiceMutation } from "../../data/invoice";
+import { useUpdateInvoiceMutation } from "@data/invoice";
 
 export type IProps = {
   invoices: Invoice[];

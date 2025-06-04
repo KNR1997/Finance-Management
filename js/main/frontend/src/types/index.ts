@@ -60,6 +60,14 @@ export interface User {
   roles: Role[];
 }
 
+export interface CreateUser {
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  role: string;
+}
+
 export interface Request {
   id: number;
   invoiceId: number;
@@ -151,9 +159,7 @@ export interface InvoiceStatusAuditQueryOptions extends QueryOptions {
 }
 
 export interface GetParams {
-  id: string;
   slug: string;
-  language: string;
 }
 
 export interface QueryOptions {

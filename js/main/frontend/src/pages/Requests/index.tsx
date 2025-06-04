@@ -1,11 +1,11 @@
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import PageMeta from "../../components/common/PageMeta";
-import Loader from "../../components/ui/loader/loader";
-import ErrorMessage from "../../components/ui/error-message";
-import RequestList from "../../components/request/request-list";
+import PageBreadcrumb from "@components/common/PageBreadCrumb";
+import PageMeta from "@components/common/PageMeta";
+import Loader from "@components/ui/loader/loader";
+import ErrorMessage from "@components/ui/error-message";
+import RequestList from "@components/request/request-list";
 import { useRequestsQuery } from "../../data/request";
 import { useState } from "react";
-import { SortOrder } from "../../types";
+import { SortOrder } from "@types";
 
 export default function Requests() {
   const [page, setPage] = useState(1);

@@ -1,9 +1,9 @@
 import cn from "classnames";
-import Label from "../ui/label";
-import Select from "../ui/select/select";
-import { EStatus } from "../../types";
+import Label from "@components/ui/label";
+import { EStatus } from "@types";
 import { ActionMeta } from "react-select";
 import { DatePicker, Space } from "antd";
+import Select from "@components/ui/select/select";
 
 type Props = {
   className?: string;
