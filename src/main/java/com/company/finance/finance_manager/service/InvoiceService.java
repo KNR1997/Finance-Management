@@ -44,12 +44,12 @@ public class InvoiceService {
                 .collect(Collectors.toMap(pair -> pair[0].trim(), pair -> pair[1].trim()));
     }
 
-    public Page<Invoice> getAllInvoices(Pageable pageable,
-                                        String search,
-                                        String fgsStatus,
-                                        String financeStatus,
-                                        String startDateStr,
-                                        String endDateStr
+    public Page<Invoice> getInvoicesPaginated(Pageable pageable,
+                                              String search,
+                                              String fgsStatus,
+                                              String financeStatus,
+                                              String startDateStr,
+                                              String endDateStr
     ) {
         Map<String, String> filters = parseSearchString(search);
 

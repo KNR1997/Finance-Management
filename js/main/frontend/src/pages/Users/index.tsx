@@ -1,11 +1,11 @@
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import PageMeta from "../../components/common/PageMeta";
-import UserList from "../../components/user/user-list";
-import Loader from "../../components/ui/loader/loader";
-import ErrorMessage from "../../components/ui/error-message";
+import PageBreadcrumb from "@components/common/PageBreadCrumb";
+import PageMeta from "@components/common/PageMeta";
+import UserList from "@components/user/user-list";
+import Loader from "@components/ui/loader/loader";
+import ErrorMessage from "@components/ui/error-message";
 import { useUsersQuery } from "../../data/user";
 import { useState } from "react";
-import { SortOrder } from "../../types";
+import { SortOrder } from "@types";
 
 export default function Users() {
   const [page, setPage] = useState(1);

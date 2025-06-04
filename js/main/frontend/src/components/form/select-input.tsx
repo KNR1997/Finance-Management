@@ -4,7 +4,7 @@ interface Option {
 }
 
 interface SelectProps {
-  disabled: boolean;
+  disabled?: boolean;
   options: Option[];
   placeholder?: string;
   value: string;

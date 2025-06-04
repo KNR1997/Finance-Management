@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { InvoicePaginator, InvoiceQueryOptions } from "../types";
+import {
+  GetParams,
+  Invoice,
+  InvoicePaginator,
+  InvoiceQueryOptions,
+} from "../types";
 import { API_ENDPOINTS } from "./client/api-endpoints";
 import { mapPaginatorData } from "../utils/data-mappers";
 import { InvoiceClient } from "./client/invoice";
@@ -23,6 +28,19 @@ export const useInvoicesQuery = (
   return {
     invoices: data?.content ?? [],
     paginatorInfo: mapPaginatorData(data),
+    error,
+    loading: isLoading,
+  };
+};
+
+export const useInvoiceQuery = ({ slug }: GetParams) => {
+  const { data, error, isLoading } = useQuery<Invoice, Error>(
+    [API_ENDPOINTS.INVOICES, { slug }],
+    () => InvoiceClient.get({ slug })
+  );
+
+  return {
+    invoice: data,
     error,
     loading: isLoading,
   };
