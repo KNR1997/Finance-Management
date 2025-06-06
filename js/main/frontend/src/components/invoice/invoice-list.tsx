@@ -120,7 +120,7 @@ export default function InvoiceList({
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Company Name
+                Location
               </TableCell>
               <TableCell
                 isHeader
@@ -175,7 +175,7 @@ export default function InvoiceList({
                   {invoice.id}
                 </TableCell> */}
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {invoice.companyName ? invoice.companyName : "_"}
+                  {invoice.location ? invoice.location : "_"}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {invoice.invoiceNumber}

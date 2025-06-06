@@ -80,3 +80,25 @@ export const useUpdateInvoiceMutation = () => {
     },
   });
 };
+
+export const useInvoiceLocaitonsQuery = (
+  params: Partial<InvoiceQueryOptions>,
+  options: any = {}
+) => {
+  const { data, error, isLoading } = useQuery<InvoicePaginator, Error>(
+    [`${API_ENDPOINTS.INVOICES}/locations`, params],
+    ({ queryKey, pageParam }) =>
+      InvoiceClient.locations(Object.assign({}, queryKey[1], pageParam)),
+    {
+      keepPreviousData: true,
+      ...options,
+    }
+  );
+
+  return {
+    locations: data?.content ?? [],
+    paginatorInfo: mapPaginatorData(data),
+    error,
+    loading: isLoading,
+  };
+};
