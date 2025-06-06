@@ -18,6 +18,7 @@ import classNames from "classnames";
 
 export default function Invoices() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [location, setLocation] = useState("");
   const [fgsStatus, setFgsStatus] = useState("");
   const [financeStatus, setFinanceStatus] = useState("");
   const [visible, setVisible] = useState(true);
@@ -31,6 +32,7 @@ export default function Invoices() {
   const { invoices, loading, error, paginatorInfo } = useInvoicesQuery({
     size: 15,
     companyName: searchTerm,
+    location: location ? location : undefined,
     fgsStatus: fgsStatus ? fgsStatus : undefined,
     financeStatus: financeStatus ? financeStatus : undefined,
     start_date: startDate ? startDate.toISOString() : undefined,
@@ -193,6 +195,10 @@ export default function Invoices() {
           <div className="mt-5 flex w-full flex-col border-t border-gray-200 pt-5 md:mt-8 md:flex-row md:items-center md:pt-8">
             <InvoiceFilter
               className="w-full"
+              onLocationStatusFilter={(object: any) => {
+                setLocation(object?.value);
+                setPage(1);
+              }}
               onFGStatusFilter={(object: any) => {
                 setFgsStatus(object?.value);
                 setPage(1);
@@ -202,6 +208,7 @@ export default function Invoices() {
                 setPage(1);
               }}
               onDateRangeFilter={onDateRangeFilter}
+              enableLocation
               enableDateRange
               enableFGStatus
               enableFinanceStatus

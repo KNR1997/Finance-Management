@@ -7,6 +7,8 @@ export interface Invoice {
   financeStatus: EStatus;
   createdAt: string;
   territory: string;
+  location: string;
+  createdUser: string;
 }
 
 export interface CreateInvoice {
@@ -141,11 +143,16 @@ export interface InvoiceStatusAuditPaginator
   extends PaginatorInfo<InvoiceStatusAudit> {}
 
 export interface InvoiceQueryOptions extends QueryOptions {
+  location: string;
   companyName: string;
   fgsStatus: string;
   financeStatus: string;
   start_date: string;
   end_date: string;
+}
+
+export interface InvoiceLocationQueryOptions extends QueryOptions {
+  name: string;
 }
 
 export interface RequestQueryOptions extends QueryOptions {}

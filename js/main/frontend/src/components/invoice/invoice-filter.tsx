@@ -4,16 +4,25 @@ import { EStatus } from "@types";
 import { ActionMeta } from "react-select";
 import { DatePicker, Space } from "antd";
 import Select from "@components/ui/select/select";
+import { QueryClient } from "@tanstack/react-query";
+import { API_ENDPOINTS } from "@data/client/api-endpoints";
+import { InvoiceClient } from "@data/client/invoice";
+import AsyncSelect from "react-select/async";
+import { selectStyles } from "@components/ui/select/select.styles";
 
 type Props = {
   className?: string;
+  onLocationStatusFilter?: (
+    newValue: any,
+    actionMeta: ActionMeta<unknown>
+  ) => void;
   onFGStatusFilter?: (newValue: any, actionMeta: ActionMeta<unknown>) => void;
   onFinanceStatusFilter?: (
     newValue: any,
     actionMeta: ActionMeta<unknown>
   ) => void;
-    onDateRangeFilter?: (dates: [Date | null, Date | null]) => void;
-
+  onDateRangeFilter?: (dates: [Date | null, Date | null]) => void;
+  enableLocation?: boolean;
   enableDateRange?: boolean;
   enableFGStatus?: boolean;
   enableFinanceStatus?: boolean;
@@ -21,18 +30,35 @@ type Props = {
 
 export default function InvoiceFilter({
   className,
+  onLocationStatusFilter,
   onFGStatusFilter,
   onFinanceStatusFilter,
-    onDateRangeFilter,
+  onDateRangeFilter,
+  enableLocation,
   enableDateRange,
   enableFGStatus,
   enableFinanceStatus,
 }: Props) {
   const { RangePicker } = DatePicker;
 
-    const handleDateChange = (
+  async function fetchAsyncInvoiceLocations(inputValue: string) {
+    console.log('inputValue: ', inputValue)
+    const queryClient = new QueryClient();
+
+    const locations = await queryClient.fetchQuery(
+      [`${API_ENDPOINTS.INVOICES}/locations`, { text: inputValue, page: 1 }],
+      () => InvoiceClient.fetchInvoiceLocations({ name: inputValue, page: 1 })
+    );
+
+    return locations?.content?.map((location: any) => ({
+      value: location,
+      label: location,
+    }));
+  }
+
+  const handleDateChange = (
     dates: [Date, Date],
-    dateStrings: [string, string],
+    dateStrings: [string, string]
   ) => {
     // Call the onDateRangeFilter callback if provided
     if (onDateRangeFilter) {
@@ -56,6 +82,28 @@ export default function InvoiceFilter({
         className
       )}
     >
+      {enableLocation && (
+        <div className="w-full">
+          <Label>Location</Label>
+          {/* <Select
+            options={locationOptions}
+            getOptionLabel={(option: any) => option.name}
+            getOptionValue={(option: any) => option.value}
+            // placeholder={t("common:filter-by-group-placeholder")}
+            onChange={onLocationStatusFilter}
+            isClearable={true}
+          /> */}
+          <AsyncSelect
+            // {...field}
+            cacheOptions
+            loadOptions={fetchAsyncInvoiceLocations}
+            defaultOptions
+            styles={selectStyles}
+            onChange={onLocationStatusFilter}
+            isClearable
+          />
+        </div>
+      )}
       {enableFGStatus && (
         <div className="w-full">
           <Label>FG Status</Label>

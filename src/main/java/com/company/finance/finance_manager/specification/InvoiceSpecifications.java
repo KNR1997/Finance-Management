@@ -21,6 +21,9 @@ public class InvoiceSpecifications {
                     case "companyName":
                         predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("companyName")), "%" + value.toLowerCase() + "%"));
                         break;
+                    case "location":
+                        predicates.add(criteriaBuilder.equal(root.get("location"), value));
+                        break;
                     case "fgsStatus":
                         predicates.add(criteriaBuilder.equal(root.get("fgsStatus"), EStatus.valueOf(value)));
                         break;

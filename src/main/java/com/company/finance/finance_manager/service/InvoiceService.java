@@ -1,6 +1,7 @@
 package com.company.finance.finance_manager.service;
 
 import com.company.finance.finance_manager.dto.InvoiceDTO;
+import com.company.finance.finance_manager.dto.InvoiceListDTO;
 import com.company.finance.finance_manager.dto.UpdateInvoiceDTO;
 import com.company.finance.finance_manager.entity.EStatus;
 import com.company.finance.finance_manager.entity.Invoice;
@@ -11,6 +12,7 @@ import com.company.finance.finance_manager.repository.UserRepository;
 import com.company.finance.finance_manager.specification.InvoiceSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
@@ -18,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -44,16 +47,20 @@ public class InvoiceService {
                 .collect(Collectors.toMap(pair -> pair[0].trim(), pair -> pair[1].trim()));
     }
 
-    public Page<Invoice> getInvoicesPaginated(Pageable pageable,
-                                              String search,
-                                              String fgsStatus,
-                                              String financeStatus,
-                                              String startDateStr,
-                                              String endDateStr
+    public Page<InvoiceListDTO> getInvoicesPaginated(Pageable pageable,
+                                                     String search,
+                                                     String location,
+                                                     String fgsStatus,
+                                                     String financeStatus,
+                                                     String startDateStr,
+                                                     String endDateStr
     ) {
         Map<String, String> filters = parseSearchString(search);
 
         // Add date filters to the map (optional)
+        if (location != null) {
+            filters.put("location", location);
+        }
         if (fgsStatus != null) {
             filters.put("fgsStatus", fgsStatus);
         }
@@ -68,7 +75,22 @@ public class InvoiceService {
         }
 
         Specification<Invoice> spec = InvoiceSpecifications.withFilters(filters);
-        return invoiceRepository.findAll(spec, pageable);
+        Page<Invoice> invoicePage = invoiceRepository.findAll(spec, pageable);
+
+        return invoicePage.map(InvoiceListDTO::new);
+    }
+
+    public Page<String> getInvoiceLocations(Pageable pageable, String search) {
+        Map<String, String> filters = parseSearchString(search);
+        String locationName = filters.getOrDefault("name", "");
+
+        List<String> allLocations = invoiceRepository.findLocations(locationName);
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), allLocations.size());
+
+        List<String> pagedLocations = allLocations.subList(start, end);
+        return new PageImpl<>(pagedLocations, pageable, allLocations.size());
     }
 
     public Invoice getInvoiceById(Integer id) {
