@@ -1,9 +1,6 @@
 package com.company.finance.finance_manager.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
@@ -20,8 +17,10 @@ public class Invoice extends TimeAuditModel {
 
     private Double value; // Todo -> DocTotal
 
+    @Enumerated(EnumType.STRING)
     private EStatus fgsStatus;
 
+    @Enumerated(EnumType.STRING)
     private EStatus financeStatus;
 
     private String territory;  // Todo -> CardCode
@@ -31,6 +30,9 @@ public class Invoice extends TimeAuditModel {
     private String location;
 
     private String createdUser;
+
+    @Enumerated(EnumType.STRING)
+    private EInvoiceType invoiceType = EInvoiceType.AGENCY;
 
 //    private LocalDateTime DocDate;
 

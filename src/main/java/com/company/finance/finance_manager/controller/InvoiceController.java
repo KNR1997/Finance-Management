@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.URI;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/invoices")
@@ -77,7 +76,6 @@ public class InvoiceController {
         Invoice response = invoiceService.updateInvoice(id, updateDto);
         return ResponseEntity.ok(response);
     }
-
 
     @GetMapping("/export")
     public void exportRequestsToExcel(

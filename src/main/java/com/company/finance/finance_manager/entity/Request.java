@@ -19,8 +19,10 @@ public class Request extends TimeAuditModel {
     @JoinColumn(name = "invoice_id")
     private Invoice invoice;
 
+    @Enumerated(EnumType.STRING)
     private ERequestType requestType;
 
+    @Enumerated(EnumType.STRING)
     private EStatus status;
 
     @ManyToOne

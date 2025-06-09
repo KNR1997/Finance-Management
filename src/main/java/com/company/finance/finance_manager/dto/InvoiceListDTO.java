@@ -1,5 +1,6 @@
 package com.company.finance.finance_manager.dto;
 
+import com.company.finance.finance_manager.entity.EInvoiceType;
 import com.company.finance.finance_manager.entity.EStatus;
 import com.company.finance.finance_manager.entity.Invoice;
 import lombok.Data;
@@ -29,6 +30,8 @@ public class InvoiceListDTO {
 
     private LocalDateTime createdAt;
 
+    private EInvoiceType invoiceType;
+
     public InvoiceListDTO(Invoice invoice) {
         this.id = invoice.getId();
         this.companyName = invoice.getCompanyName();
@@ -40,5 +43,6 @@ public class InvoiceListDTO {
         this.location = invoice.getLocation();
         this.createdUser = invoice.getCreatedUser();
         this.createdAt = invoice.getCreatedAt();
+        this.invoiceType = invoice.getInvoiceType();
     }
 }

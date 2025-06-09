@@ -1,5 +1,11 @@
 import { useNavigate } from "react-router";
-import { Invoice, EStatus, MappedPaginatorInfo, ERole } from "@types";
+import {
+  Invoice,
+  EStatus,
+  MappedPaginatorInfo,
+  ERole,
+  EInvoiceType,
+} from "@types";
 import Badge from "@components/ui/badge/Badge";
 import {
   Table,
@@ -120,13 +126,25 @@ export default function InvoiceList({
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Location
+                Company
               </TableCell>
               <TableCell
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
                 Invoice Number
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                CreatedAt
+              </TableCell>
+              <TableCell
+                isHeader
+                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                Location
               </TableCell>
               <TableCell
                 isHeader
@@ -144,7 +162,7 @@ export default function InvoiceList({
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                CreatedAt
+                Invoice Type
               </TableCell>
               <TableCell
                 isHeader
@@ -175,10 +193,16 @@ export default function InvoiceList({
                   {invoice.id}
                 </TableCell> */}
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {invoice.location ? invoice.location : "_"}
+                  {invoice.companyName ? invoice.companyName : "_"}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {invoice.invoiceNumber}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  {new Date(invoice.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  {invoice.location ? invoice.location : "_"}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {invoice.value}
@@ -187,7 +211,20 @@ export default function InvoiceList({
                   {invoice?.territory ? invoice.territory : "_"}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {new Date(invoice.createdAt).toLocaleString()}
+                  <Badge
+                    size="sm"
+                    color={
+                      invoice.invoiceType === EInvoiceType.AGENCY
+                        ? "primary"
+                        : invoice.invoiceType === EInvoiceType.DIRECT
+                        ? "error"
+                        : invoice.invoiceType === EInvoiceType.ON_APPROVED
+                        ? "info"
+                        : "light"
+                    }
+                  >
+                    {invoice.invoiceType}
+                  </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <button
