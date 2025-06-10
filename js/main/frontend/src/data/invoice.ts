@@ -81,6 +81,25 @@ export const useUpdateInvoiceMutation = () => {
   });
 };
 
+export const usePatchInvoiceMutation = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  return useMutation(InvoiceClient.patch,  {
+    onSuccess: async () => {
+      navigate("/invoices");
+      toast.success("Successfully updated!");
+    },
+    // Always refetch after error or success:
+    onSettled: () => {
+      queryClient.invalidateQueries(API_ENDPOINTS.INVOICES);
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message);
+    },
+  });
+};
+
 export const useInvoiceLocaitonsQuery = (
   params: Partial<InvoiceQueryOptions>,
   options: any = {}

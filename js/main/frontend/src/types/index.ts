@@ -9,6 +9,7 @@ export interface Invoice {
   territory: string;
   location: string;
   createdUser: string;
+  invoiceType: EInvoiceType;
 }
 
 export interface CreateInvoice {
@@ -18,6 +19,7 @@ export interface CreateInvoice {
   fgsStatus: EStatus;
   financeStatus: EStatus;
   createdAt: string;
+  invoiceType: EInvoiceType;
 }
 
 export interface InvoiceStatusAudit {
@@ -33,6 +35,13 @@ export interface InvoiceStatusAudit {
 export enum EStatus {
   PENDING = "PENDING",
   COMPLETED = "COMPLETED",
+}
+
+export enum EInvoiceType {
+  AGENCY = "AGENCY",
+  DIRECT = "DIRECT",
+  ON_APPROVED = "ON_APPROVED",
+  OTHER = "OTHER",
 }
 
 export enum ERequestType {
