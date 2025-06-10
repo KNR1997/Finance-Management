@@ -2,7 +2,7 @@ package com.company.finance.finance_manager.service;
 
 import com.company.finance.finance_manager.dto.InvoiceDTO;
 import com.company.finance.finance_manager.dto.InvoiceListDTO;
-import com.company.finance.finance_manager.dto.UpdateInvoiceDTO;
+import com.company.finance.finance_manager.dto.InvoiceUpdateDTO;
 import com.company.finance.finance_manager.entity.EStatus;
 import com.company.finance.finance_manager.entity.Invoice;
 import com.company.finance.finance_manager.exception.ResourceNotFoundException;
@@ -110,40 +110,81 @@ public class InvoiceService {
         return invoiceRepository.save(invoice);
     }
 
-    public Invoice updateInvoice(Integer id, UpdateInvoiceDTO updateInvoiceDTO) {
+    public Invoice updateInvoice(Integer id, InvoiceUpdateDTO invoiceUpdateDTO) {
         Invoice invoice = invoiceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found with ID: " + id));
 
         String currentUser = getCurrentUsername(); // Fetch from SecurityContext or Auth
 
         // FGS Status change
-        if (updateInvoiceDTO.getFgsStatus() != null && !Objects.equals(invoice.getFgsStatus(), updateInvoiceDTO.getFgsStatus())) {
+        if (invoiceUpdateDTO.getFgsStatus() != null && !Objects.equals(invoice.getFgsStatus(), invoiceUpdateDTO.getFgsStatus())) {
             invoiceStatusAuditService.saveStatusAudit(
                     invoice.getInvoiceNumber(),
                     "fgsStatus",
                     String.valueOf(invoice.getFgsStatus()),
-                    String.valueOf(updateInvoiceDTO.getFgsStatus()),
+                    String.valueOf(invoiceUpdateDTO.getFgsStatus()),
                     currentUser);
 
-            invoice.setFgsStatus(updateInvoiceDTO.getFgsStatus());
+            invoice.setFgsStatus(invoiceUpdateDTO.getFgsStatus());
         }
 
         // Finance Status change
-        if (updateInvoiceDTO.getFinanceStatus() != null && !Objects.equals(invoice.getFinanceStatus(), updateInvoiceDTO.getFinanceStatus())) {
+        if (invoiceUpdateDTO.getFinanceStatus() != null && !Objects.equals(invoice.getFinanceStatus(), invoiceUpdateDTO.getFinanceStatus())) {
             invoiceStatusAuditService.saveStatusAudit(
                     invoice.getInvoiceNumber(),
                     "financeStatus",
                     String.valueOf(invoice.getFinanceStatus()),
-                    String.valueOf(updateInvoiceDTO.getFinanceStatus()),
+                    String.valueOf(invoiceUpdateDTO.getFinanceStatus()),
                     currentUser);
 
-            invoice.setFinanceStatus(updateInvoiceDTO.getFinanceStatus());
+            invoice.setFinanceStatus(invoiceUpdateDTO.getFinanceStatus());
         }
 
-        invoice.setRemarks(updateInvoiceDTO.getRemarks());
+        invoice.setInvoiceType(invoiceUpdateDTO.getInvoiceType());
+        invoice.setRemarks(invoiceUpdateDTO.getRemarks());
         return invoiceRepository.save(invoice);
     }
 
+    public Invoice partialUpdateInvoice(Integer id, InvoiceUpdateDTO invoiceUpdateDTO) {
+        Invoice invoice = invoiceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Invoice not found with ID: " + id));
+
+        String currentUser = getCurrentUsername(); // Fetch from SecurityContext or similar
+
+        // Partial update: only update fields that are non-null in DTO
+
+        if (invoiceUpdateDTO.getFgsStatus() != null && !Objects.equals(invoice.getFgsStatus(), invoiceUpdateDTO.getFgsStatus())) {
+            invoiceStatusAuditService.saveStatusAudit(
+                    invoice.getInvoiceNumber(),
+                    "fgsStatus",
+                    String.valueOf(invoice.getFgsStatus()),
+                    String.valueOf(invoiceUpdateDTO.getFgsStatus()),
+                    currentUser
+            );
+            invoice.setFgsStatus(invoiceUpdateDTO.getFgsStatus());
+        }
+
+        if (invoiceUpdateDTO.getFinanceStatus() != null && !Objects.equals(invoice.getFinanceStatus(), invoiceUpdateDTO.getFinanceStatus())) {
+            invoiceStatusAuditService.saveStatusAudit(
+                    invoice.getInvoiceNumber(),
+                    "financeStatus",
+                    String.valueOf(invoice.getFinanceStatus()),
+                    String.valueOf(invoiceUpdateDTO.getFinanceStatus()),
+                    currentUser
+            );
+            invoice.setFinanceStatus(invoiceUpdateDTO.getFinanceStatus());
+        }
+
+        if (invoiceUpdateDTO.getInvoiceType() != null) {
+            invoice.setInvoiceType(invoiceUpdateDTO.getInvoiceType());
+        }
+
+        if (invoiceUpdateDTO.getRemarks() != null) {
+            invoice.setRemarks(invoiceUpdateDTO.getRemarks());
+        }
+
+        return invoiceRepository.save(invoice);
+    }
 
     private String getCurrentUsername() {
         // Example using Spring Security

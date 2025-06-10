@@ -19,6 +19,7 @@ export interface CreateInvoice {
   fgsStatus: EStatus;
   financeStatus: EStatus;
   createdAt: string;
+  invoiceType: EInvoiceType;
 }
 
 export interface InvoiceStatusAudit {

@@ -18,7 +18,8 @@ import { PencilIcon } from "../../icons";
 import Pagination from "@components/ui/pagination";
 import "rc-pagination/assets/index.css";
 import { useAuth } from "../../context/AuthContext";
-import { useUpdateInvoiceMutation } from "@data/invoice";
+import { usePatchInvoiceMutation, useUpdateInvoiceMutation } from "@data/invoice";
+import { useState } from "react";
 
 export type IProps = {
   invoices: Invoice[];
@@ -43,11 +44,12 @@ export default function InvoiceList({
 }: IProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
-  // const { isOpen, openModal, closeModal } = useModal();
-  // const [modalType, setModalType] = useState<"FG" | "FINANCE" | null>(null);
-  // const { control, handleSubmit, register, setValue } = useForm<FormValues>();
+  const [dropdownInvoiceId, setDropdownInvoiceId] = useState<number | null>(
+    null
+  );
 
   const { mutate: updateInvoice } = useUpdateInvoiceMutation();
+  const { mutate: patchInvoice } = usePatchInvoiceMutation();
 
   const handleEdit = (id: number) => {
     navigate(`/invoices/${id}/edit`);
@@ -79,35 +81,30 @@ export default function InvoiceList({
       value: invoice.value,
       fgsStatus: type === "FG" ? updatedStatus : invoice.fgsStatus,
       financeStatus: type === "FINANCE" ? updatedStatus : invoice.financeStatus,
+      invoiceType: invoice.invoiceType,
     };
 
     updateInvoice({ ...input, id: invoice.id });
-
-    // Optional: if you decide to re-enable the modal code
-    // setValue("invoiceId", invoice.id);
-    // setValue("invoiceNumber", invoice.invoiceNumber);
-    // setValue("value", invoice.value);
-    // setValue("fgsStatus", input.fgsStatus);
-    // setValue("financeStatus", input.financeStatus);
-    // setModalType(type);
-    // openModal();
   };
 
-  // const invoiceStatus = [
-  //   { label: "Pending", value: EStatus.PENDING },
-  //   { label: "Completed", value: EStatus.COMPLETED },
-  // ];
+  const handleInvoiceTypeChange = (invoice: Invoice) => {
+    // console.log("invoice type change: ", invoice);
+    setDropdownInvoiceId((prevId) =>
+      prevId === invoice.id ? null : invoice.id
+    );
+  };
 
-  // const onSubmit = async (values: FormValues) => {
-  //   const input = {
-  //     invoiceNumber: values.invoiceNumber,
-  //     value: values.value,
-  //     fgsStatus: values.fgsStatus,
-  //     financeStatus: values.financeStatus,
-  //   };
-  //   updateInvoice({ ...input, id: values.invoiceId });
-  //   closeModal();
-  // };
+  const invoiceTypeOptions = [
+    { label: "Agency", value: EInvoiceType.AGENCY },
+    { label: "Direct", value: EInvoiceType.DIRECT },
+    { label: "OnApproval", value: EInvoiceType.ON_APPROVED },
+    { label: "Other", value: EInvoiceType.OTHER },
+  ];
+
+  const handleSelectInvoiceType = (invoiceId: number, type: EInvoiceType) => {
+    patchInvoice({ id: invoiceId, invoiceType: type });
+    setDropdownInvoiceId(null); // Close the dropdown
+  };
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -211,20 +208,39 @@ export default function InvoiceList({
                   {invoice?.territory ? invoice.territory : "_"}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  <Badge
-                    size="sm"
-                    color={
-                      invoice.invoiceType === EInvoiceType.AGENCY
-                        ? "primary"
-                        : invoice.invoiceType === EInvoiceType.DIRECT
-                        ? "error"
-                        : invoice.invoiceType === EInvoiceType.ON_APPROVED
-                        ? "info"
-                        : "light"
-                    }
-                  >
-                    {invoice.invoiceType}
-                  </Badge>
+                  <button onClick={() => handleInvoiceTypeChange(invoice)}>
+                    <Badge
+                      size="sm"
+                      color={
+                        invoice.invoiceType === EInvoiceType.AGENCY
+                          ? "primary"
+                          : invoice.invoiceType === EInvoiceType.DIRECT
+                          ? "error"
+                          : invoice.invoiceType === EInvoiceType.ON_APPROVED
+                          ? "info"
+                          : "light"
+                      }
+                    >
+                      {invoice.invoiceType}
+                    </Badge>
+                  </button>
+                  {dropdownInvoiceId === invoice.id && (
+                    <div className="absolute z-10 mt-2 w-32 rounded-md bg-white shadow-lg border border-gray-200">
+                      <ul className="py-1 text-sm text-gray-700">
+                        {invoiceTypeOptions.map((option) => (
+                          <li
+                            key={option.value}
+                            onClick={() =>
+                              handleSelectInvoiceType(invoice.id, option.value)
+                            }
+                            className="cursor-pointer px-4 py-2 hover:bg-gray-100"
+                          >
+                            {option.label}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <button
