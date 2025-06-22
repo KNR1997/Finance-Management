@@ -1,7 +1,7 @@
 package com.company.finance.finance_manager.dto;
 
-import com.company.finance.finance_manager.entity.EInvoiceType;
-import com.company.finance.finance_manager.entity.EStatus;
+import com.company.finance.finance_manager.enums.EInvoiceType;
+import com.company.finance.finance_manager.enums.EStatus;
 import com.company.finance.finance_manager.entity.Invoice;
 import lombok.Data;
 

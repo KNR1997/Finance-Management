@@ -1,7 +1,7 @@
 package com.company.finance.finance_manager.service;
 
 import com.company.finance.finance_manager.dto.UserDTO;
-import com.company.finance.finance_manager.entity.ERole;
+import com.company.finance.finance_manager.enums.ERole;
 import com.company.finance.finance_manager.entity.Role;
 import com.company.finance.finance_manager.entity.User;
 import com.company.finance.finance_manager.exception.BadRequestException;

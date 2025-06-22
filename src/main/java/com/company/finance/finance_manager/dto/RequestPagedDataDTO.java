@@ -1,6 +1,6 @@
 package com.company.finance.finance_manager.dto;
 
-import com.company.finance.finance_manager.entity.ERequestType;
+import com.company.finance.finance_manager.enums.ERequestType;
 import com.company.finance.finance_manager.entity.Request;
 import lombok.Data;
 

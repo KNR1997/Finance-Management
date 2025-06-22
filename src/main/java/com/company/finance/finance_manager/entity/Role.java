@@ -1,5 +1,6 @@
 package com.company.finance.finance_manager.entity;
 
+import com.company.finance.finance_manager.enums.ERole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

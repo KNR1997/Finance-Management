@@ -3,7 +3,7 @@ package com.company.finance.finance_manager.service;
 import com.company.finance.finance_manager.dto.InvoiceDTO;
 import com.company.finance.finance_manager.dto.InvoiceListDTO;
 import com.company.finance.finance_manager.dto.InvoiceUpdateDTO;
-import com.company.finance.finance_manager.entity.EStatus;
+import com.company.finance.finance_manager.enums.EStatus;
 import com.company.finance.finance_manager.entity.Invoice;
 import com.company.finance.finance_manager.exception.ResourceNotFoundException;
 import com.company.finance.finance_manager.repository.InvoiceRepository;

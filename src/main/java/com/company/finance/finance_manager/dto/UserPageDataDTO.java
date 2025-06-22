@@ -1,6 +1,6 @@
 package com.company.finance.finance_manager.dto;
 
-import com.company.finance.finance_manager.entity.ERole;
+import com.company.finance.finance_manager.enums.ERole;
 import lombok.Data;
 
 import java.util.Set;

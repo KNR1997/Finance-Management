@@ -1,7 +1,7 @@
 package com.company.finance.finance_manager.controller;
 
 import com.company.finance.finance_manager.dto.*;
-import com.company.finance.finance_manager.entity.ERole;
+import com.company.finance.finance_manager.enums.ERole;
 import com.company.finance.finance_manager.entity.Role;
 import com.company.finance.finance_manager.entity.User;
 import com.company.finance.finance_manager.repository.RoleRepository;

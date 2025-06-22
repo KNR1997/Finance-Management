@@ -5,6 +5,9 @@ import com.company.finance.finance_manager.dto.RequestPagedDataDTO;
 import com.company.finance.finance_manager.dto.RequestPaginatedDTO;
 import com.company.finance.finance_manager.dto.RequestUpdateDTO;
 import com.company.finance.finance_manager.entity.*;
+import com.company.finance.finance_manager.enums.ERequestType;
+import com.company.finance.finance_manager.enums.EResponse;
+import com.company.finance.finance_manager.enums.EStatus;
 import com.company.finance.finance_manager.exception.ResourceNotFoundException;
 import com.company.finance.finance_manager.repository.InvoiceRepository;
 import com.company.finance.finance_manager.repository.RequestRepository;
@@ -15,9 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class RequestService {

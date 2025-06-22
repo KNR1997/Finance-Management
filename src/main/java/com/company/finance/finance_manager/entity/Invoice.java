@@ -1,5 +1,7 @@
 package com.company.finance.finance_manager.entity;
 
+import com.company.finance.finance_manager.enums.EInvoiceType;
+import com.company.finance.finance_manager.enums.EStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,10 +20,10 @@ public class Invoice extends TimeAuditModel {
     private Double value; // Todo -> DocTotal
 
     @Enumerated(EnumType.STRING)
-    private EStatus fgsStatus;
+    private EStatus fgsStatus = EStatus.PENDING;
 
     @Enumerated(EnumType.STRING)
-    private EStatus financeStatus;
+    private EStatus financeStatus = EStatus.PENDING;
 
     private String territory;  // Todo -> CardCode
 

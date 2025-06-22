@@ -1,6 +1,6 @@
 package com.company.finance.finance_manager.specification;
 
-import com.company.finance.finance_manager.entity.EStatus;
+import com.company.finance.finance_manager.enums.EStatus;
 import com.company.finance.finance_manager.entity.Invoice;
 import org.springframework.data.jpa.domain.Specification;
 

@@ -1,4 +1,4 @@
-package com.company.finance.finance_manager.entity;
+package com.company.finance.finance_manager.enums;
 
 public enum ERole {
     ROLE_ADMIN,

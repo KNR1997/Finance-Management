@@ -1,5 +1,7 @@
 package com.company.finance.finance_manager.entity;
 
+import com.company.finance.finance_manager.enums.ERequestType;
+import com.company.finance.finance_manager.enums.EStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
