@@ -1,10 +1,9 @@
 package com.company.finance.finance_manager.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -20,10 +19,12 @@ public class InvoiceMiddleware {
 
     private String cardCode;
 
-    private String docTotal;
+    private Double docTotal;
 
     private String wareHouse;
 
     private String userSign;
+
+    private LocalDateTime syncedAt;
 
 }
